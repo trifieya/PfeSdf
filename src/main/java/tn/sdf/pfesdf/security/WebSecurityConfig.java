@@ -23,7 +23,7 @@ import tn.sdf.pfesdf.security.services.UserDetailsServiceImpl;
 
 
 @Configuration
-@EnableGlobalMethodSecurity(
+@EnableGlobalMethodSecurity( //assure la sécurité AOP sur les méthodes. Il permet @PreAuthorize, @PostAuthorize,
         // securedEnabled = true,
         // jsr250Enabled = true,
         prePostEnabled = true)
@@ -34,17 +34,17 @@ public class WebSecurityConfig {
     UserDetailsServiceImpl userDetailsService;
 
     @Autowired
-    private AuthEntryPointJwt unauthorizedHandler;
+    private AuthEntryPointJwt unauthorizedHandler; // gère les tentatives d'accès non autorisées.
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter();
-    }
+    }//un filtre personnalisé qui intercepte les requêtes entrantes, vérifie la présence d'un jeton JWT dans les en-têtes de la requête et valide le jeton.
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-
+        //comparant un mot de passe soumis à un mot de passe encodé stocké dans la base de données.
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
 
@@ -53,27 +53,27 @@ public class WebSecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-        return authConfig.getAuthenticationManager();
+        return authConfig.getAuthenticationManager();//utilisée pour authentifier les utilisateurs.
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {//La méthode passwordEncoder renvoie une instance de BCryptPasswordEncoder, qui est utilisée pour encoder les mots de passe.
         return new BCryptPasswordEncoder();
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable()
-                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests().antMatchers("/api/auth/**").permitAll()
-                .antMatchers("/api/test/**").permitAll()
-                .anyRequest().authenticated();
+        http.cors().and().csrf().disable() // En désactivant cette protection, on autorise les requêtes HTTP à être effectuées à partir de n'importe quel domaine.
+                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and() //configure l'entrée du point d'authentification pour les erreurs d'authentification. L'implémentation unauthorizedHandler est utilisée pour renvoyer une réponse HTTP 401 (Unauthorized) lorsque l'utilisateur n'est pas authentifié.
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and() //ce qui signifie que l'application n'utilise pas de session HTTP. Cela permet d'éviter les problèmes de synchronisation de session dans les environnements distribués et garantit que chaque requête HTTP est autonome et contient toutes les informations nécessaires à l'authentification.
+                .authorizeRequests().antMatchers("/api/auth/**").permitAll() //indique que toutes les requêtes sur les URL commençant par /api/auth/ sont autorisées sans aucune restriction d'authentification.
+                .antMatchers("/api/test/**").permitAll() // indique que toutes les requêtes sur les URL commençant par /api/test/ sont également autorisées sans restriction.
+                .anyRequest().authenticated(); //spécifie que toutes les autres URL nécessitent une authentification.
 
-        http.authenticationProvider(authenticationProvider());
+        http.authenticationProvider(authenticationProvider()); //indique que le DaoAuthenticationProvider créé dans la méthode authenticationProvider() doit être utilisé pour authentifier les utilisateurs.
 
-        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class); //garantir que le jeton JWT est vérifié avant la tentative d'authentification par nom d'utilisateur et mot de passe.
 
-        return http.build();
+        return http.build(); // renvoie la chaîne de filtres de sécurité configurée.
     }
 }

@@ -8,21 +8,48 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tn.sdf.pfesdf.entities.Agent;
+import tn.sdf.pfesdf.entities.Parrain;
 import tn.sdf.pfesdf.entities.Personne;
-import tn.sdf.pfesdf.repository.UserRepository;
+import tn.sdf.pfesdf.repository.AgentRepository;
+import tn.sdf.pfesdf.repository.ParrainRepository;
+import tn.sdf.pfesdf.repository.PersonneRepository;
 
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
-    UserRepository userRepository;
+    PersonneRepository personneRepository;
+    @Autowired
+    AgentRepository agentRepository;
+    @Autowired
+    ParrainRepository parrainRepository;
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Personne personne = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
+        Personne personne = personneRepository.findByUsername(username)
+                .orElse(null);
 
-        return UserDetailsImpl.build(personne);
+        if(personne != null) {
+            return UserDetailsImpl.buildPersonne(personne);
+        }
+
+        Parrain parrain = parrainRepository.findByUsername(username)
+                .orElse(null);
+
+        if(parrain != null) {
+            return UserDetailsImpl.buildParrain(parrain);
+        }
+
+        Agent agent = agentRepository.findByUsername(username)
+                .orElse(null);
+
+        if(agent != null) {
+            return UserDetailsImpl.buildAgent(agent);
+        }
+
+        throw new UsernameNotFoundException("User Not Found with username: " + username);
     }
+
 }
 

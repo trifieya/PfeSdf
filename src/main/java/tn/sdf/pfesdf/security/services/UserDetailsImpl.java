@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import tn.sdf.pfesdf.entities.Agent;
+import tn.sdf.pfesdf.entities.Parrain;
 import tn.sdf.pfesdf.entities.Personne;
 
 
@@ -25,9 +27,9 @@ public class UserDetailsImpl implements UserDetails {
     private String email;
 
     @JsonIgnore
-    private String password;
+    private String password; //pour ne pas être retourné dans la réponse JSON.
 
-    private Collection<? extends GrantedAuthority> authorities;
+    private Collection<? extends GrantedAuthority> authorities; //les éléments de la Collection sont des objets qui étendent l'interface GrantedAuthority. GrantedAuthority est une interface de Spring Security qui représente une autorisation attribuée à un utilisateur. Les implémentations courantes de cette interface sont SimpleGrantedAuthority et Role, qui sont utilisées pour stocker les rôles de l'utilisateur.
 
     public UserDetailsImpl(Long id, String username, String email, String password,
                            Collection<? extends GrantedAuthority> authorities) {
@@ -38,7 +40,7 @@ public class UserDetailsImpl implements UserDetails {
         this.authorities = authorities;
     }
 
-    public static UserDetailsImpl build(Personne personne) {
+    public static UserDetailsImpl buildPersonne(Personne personne) {
         List<GrantedAuthority> authorities = personne.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName().name()))
                 .collect(Collectors.toList());
@@ -50,6 +52,32 @@ public class UserDetailsImpl implements UserDetails {
                 personne.getPassword(),
                 authorities);
     }
+    public static UserDetailsImpl buildParrain(Parrain parrain) {
+        List<GrantedAuthority> authorities = parrain.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+                .collect(Collectors.toList());
+
+
+        return new UserDetailsImpl(
+                parrain.getIdParrain(),
+                parrain.getUsername(),
+                parrain.getEmail(),
+                parrain.getPassword(),
+                authorities);
+    }
+    public static UserDetailsImpl buildAgent(Agent agent) {
+        List<GrantedAuthority> authorities = agent.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+                .collect(Collectors.toList());
+
+        return new UserDetailsImpl(
+                agent.getIdAgent(),
+                agent.getUsername(),
+                agent.getEmail(),
+                agent.getPassword(),
+                authorities);
+    }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

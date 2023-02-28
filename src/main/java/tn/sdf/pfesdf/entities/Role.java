@@ -5,9 +5,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 
-    @Entity
+@Entity
     @Getter
     @Setter
     @NoArgsConstructor
@@ -20,10 +22,19 @@ import javax.persistence.*;
         @Enumerated(EnumType.STRING)
         @Column(length = 20)
         private ERole name;
+        @ManyToMany(mappedBy = "roles")
+        private Set<Personne> personnes = new HashSet<>();
+
+        @ManyToMany(mappedBy = "roles")
+        private Set<Agent> agents = new HashSet<>();
+
+        @ManyToMany(mappedBy = "roles")
+        private Set<Parrain> parrains = new HashSet<>();
 
         public Role(ERole name) {
             this.name = name;
         }
+
 
 
 }
