@@ -37,7 +37,7 @@ import tn.sdf.pfesdf.security.services.UserDetailsImpl;
 
 /* In AuthController.java */
 // @CrossOrigin(origins = "*", maxAge = 3600)
-@CrossOrigin(origins = "http://localhost:8081", maxAge = 3600, allowCredentials="true")
+@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600, allowCredentials="true")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -80,8 +80,20 @@ public class AuthController {
                 .body(new UserInfoResponse(userDetails.getId(),
                         userDetails.getUsername(),
                         userDetails.getEmail(),
+                        userDetails.getNom(),
+                        userDetails.getPhoto(),
+                        userDetails.getPrenom(),
+                        userDetails.getAge(),
+                        userDetails.getTrancheAge(),
+                        userDetails.getPassword(),
+                        userDetails.getGender(),
+                        userDetails.getPhnum(),
+                        userDetails.getCin(),
+                        userDetails.getLogitude(),
+                        userDetails.getLatitude(),
                         roles));
     }
+
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {

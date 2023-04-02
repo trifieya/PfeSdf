@@ -31,21 +31,21 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .orElse(null);
 
         if(personne != null) {
-            return UserDetailsImpl.buildPersonne(personne);
+            return UserDetailsImpl.build(personne);
         }
 
         Parrain parrain = parrainRepository.findByUsername(username)
                 .orElse(null);
 
         if(parrain != null) {
-            return UserDetailsImpl.buildParrain(parrain);
+            return UserDetailsImpl.build(parrain);
         }
 
         Agent agent = agentRepository.findByUsername(username)
                 .orElse(null);
 
         if(agent != null) {
-            return UserDetailsImpl.buildAgent(agent);
+            return UserDetailsImpl.build(agent);
         }
 
         throw new UsernameNotFoundException("User Not Found with username: " + username);

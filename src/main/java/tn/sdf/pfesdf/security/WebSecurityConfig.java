@@ -68,6 +68,9 @@ public class WebSecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and() //ce qui signifie que l'application n'utilise pas de session HTTP. Cela permet d'éviter les problèmes de synchronisation de session dans les environnements distribués et garantit que chaque requête HTTP est autonome et contient toutes les informations nécessaires à l'authentification.
                 .authorizeRequests().antMatchers("/api/auth/**").permitAll() //indique que toutes les requêtes sur les URL commençant par /api/auth/ sont autorisées sans aucune restriction d'authentification.
                 .antMatchers("/api/test/**").permitAll() // indique que toutes les requêtes sur les URL commençant par /api/test/ sont également autorisées sans restriction.
+                .antMatchers("/agent/**").permitAll()
+                .antMatchers("/parrain/**").permitAll()
+                .antMatchers("/personne/**").permitAll()
                 .anyRequest().authenticated(); //spécifie que toutes les autres URL nécessitent une authentification.
 
         http.authenticationProvider(authenticationProvider()); //indique que le DaoAuthenticationProvider créé dans la méthode authenticationProvider() doit être utilisé pour authentifier les utilisateurs.

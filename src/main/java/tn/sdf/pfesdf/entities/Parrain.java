@@ -1,5 +1,6 @@
 package tn.sdf.pfesdf.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -48,9 +49,10 @@ public class Parrain implements Serializable {
     //private String role;
     private Float logitude;
     private Float latitude;
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parrain")
     private Set<Personne>personnespar;
-
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinTable(name = "parrain_roles",
             joinColumns = @JoinColumn(name = "user_id"),

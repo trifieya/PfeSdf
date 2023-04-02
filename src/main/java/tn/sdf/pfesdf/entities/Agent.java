@@ -1,5 +1,6 @@
 package tn.sdf.pfesdf.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -48,11 +49,13 @@ public class Agent implements Serializable {
     //private String role;
     private Float logitude;
     private Float latitude;
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "agent")
     private Set<RendezVous>rendezVousag;
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "agental")
     private Set<Alerte>alertes;
-
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinTable(name = "agent_roles",
             joinColumns = @JoinColumn(name = "user_id"),

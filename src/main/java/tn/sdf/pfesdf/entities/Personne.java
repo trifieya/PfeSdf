@@ -1,5 +1,6 @@
 package tn.sdf.pfesdf.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -25,6 +26,7 @@ public class Personne implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idPersonne;
+    private String Photo; //à ajouter  tetnaha ml profil
     private String nom;
     private String prenom;
     @NotBlank
@@ -35,7 +37,7 @@ public class Personne implements Serializable {
     @Enumerated(EnumType.STRING)
     private TrancheAge trancheAge;
     @Enumerated(EnumType.STRING)
-    private TypePersonne typePersonne;
+    private TypePersonne typePersonne; //moch commun nrml mahich importante dima null bch nkhaleha
     @NotBlank
     @Size(max = 20)
     private String username;
@@ -45,10 +47,12 @@ public class Personne implements Serializable {
     @Enumerated(EnumType.STRING)
     private Gender gender;
     private Integer phnum;
+    private Integer cin; //bch tetzed mbaad w tetnaha ml profil
     //private String role;
     private Float logitude;
     private Float latitude;
 
+   @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinTable(name = "personne_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -76,6 +80,8 @@ public class Personne implements Serializable {
         this.password = password;
 
     }
+
+
     public Set<Role> getRoles() {
         return roles;
     }

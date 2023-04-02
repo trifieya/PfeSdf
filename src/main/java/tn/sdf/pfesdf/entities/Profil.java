@@ -15,8 +15,6 @@ public class Profil {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idProfil;
-    private String photo;
-    private Integer cin;
     private Diplome diplome;
     private String maladie;
     private LocalDate dateHebergCentre;
