@@ -1,0 +1,31 @@
+version: "3.4"
+
+services:
+  mysql-container4:
+    container_name: mysql-container4
+    ports:
+      - '3306:3306'
+    environment:
+      - MYSQL_DATABASE=1
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
+    restart: always
+    volumes:
+      - mysql-container4:/var/lib/mysql:rw
+    image: 'mysql:latest'
+  achat-backend:
+    depends_on:
+      - mysql-container4
+    container_name: sdf-backend
+    ports:
+      - '8087:8087'
+    image: eyatrifii/sdf-backend
+  angularpart:
+    depends_on:
+      - sdf-backend
+    container_name: sdf-frontend
+    image: eyatrifii/sdf-frontend
+    ports:
+      - '4200:80'
+
+volumes:
+  mysql-container4: { }
