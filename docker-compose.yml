@@ -12,7 +12,7 @@ services:
     volumes:
       - mysql-container4:/var/lib/mysql:rw
     image: 'mysql:latest'
-  achat-backend:
+  sdf-backend:
     depends_on:
       - mysql-container4
     container_name: sdf-backend
