@@ -17,9 +17,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 import tn.sdf.pfesdf.security.jwt.AuthEntryPointJwt;
 import tn.sdf.pfesdf.security.jwt.AuthTokenFilter;
 import tn.sdf.pfesdf.security.services.UserDetailsServiceImpl;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 
 @Configuration
@@ -63,21 +67,27 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable() // En désactivant cette protection, on autorise les requêtes HTTP à être effectuées à partir de n'importe quel domaine.
-                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and() //configure l'entrée du point d'authentification pour les erreurs d'authentification. L'implémentation unauthorizedHandler est utilisée pour renvoyer une réponse HTTP 401 (Unauthorized) lorsque l'utilisateur n'est pas authentifié.
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and() //ce qui signifie que l'application n'utilise pas de session HTTP. Cela permet d'éviter les problèmes de synchronisation de session dans les environnements distribués et garantit que chaque requête HTTP est autonome et contient toutes les informations nécessaires à l'authentification.
-                .authorizeRequests().antMatchers("/api/auth/**").permitAll() //indique que toutes les requêtes sur les URL commençant par /api/auth/ sont autorisées sans aucune restriction d'authentification.
-                .antMatchers("/api/test/**").permitAll() // indique que toutes les requêtes sur les URL commençant par /api/test/ sont également autorisées sans restriction.
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowedOrigins(Collections.singletonList("http://192.168.162.222:4200"));
+        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+        corsConfiguration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
+
+        http.cors().configurationSource(request -> corsConfiguration).and()
+                .csrf().disable()
+                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                .authorizeRequests()
+                .antMatchers("/api/auth/**").permitAll()
+                .antMatchers("/api/test/**").permitAll()
                 .antMatchers("/agent/**").permitAll()
                 .antMatchers("/parrain/**").permitAll()
                 .antMatchers("/personne/**").permitAll()
-                .antMatchers("http://192.168.162.222:4200").permitAll()
-                .anyRequest().authenticated(); //spécifie que toutes les autres URL nécessitent une authentification.
+                .anyRequest().authenticated();
 
-        http.authenticationProvider(authenticationProvider()); //indique que le DaoAuthenticationProvider créé dans la méthode authenticationProvider() doit être utilisé pour authentifier les utilisateurs.
+        http.authenticationProvider(authenticationProvider());
+        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
-        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class); //garantir que le jeton JWT est vérifié avant la tentative d'authentification par nom d'utilisateur et mot de passe.
-
-        return http.build(); // renvoie la chaîne de filtres de sécurité configurée.
+        return http.build();
     }
+
 }
