@@ -6,7 +6,7 @@ import tn.sdf.pfesdf.entities.Personne;
 import tn.sdf.pfesdf.interfaces.IPersonneService;
 
 import java.util.List;
-@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600, allowCredentials="true")
+@CrossOrigin(origins = "*", maxAge = 3600, allowCredentials="true")
 @RestController
 @RequestMapping("/personne")
 public class PersonneRestController {
