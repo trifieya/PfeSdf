@@ -71,7 +71,7 @@ public class WebSecurityConfig {
                 .antMatchers("/agent/**").permitAll()
                 .antMatchers("/parrain/**").permitAll()
                 .antMatchers("/personne/**").permitAll()
-                .antMatchers("http://192.168.162.222:4200/**").permitAll()
+                .antMatchers("http://192.168.162.222:4200").permitAll()
                 .anyRequest().authenticated(); //spécifie que toutes les autres URL nécessitent une authentification.
 
         http.authenticationProvider(authenticationProvider()); //indique que le DaoAuthenticationProvider créé dans la méthode authenticationProvider() doit être utilisé pour authentifier les utilisateurs.
