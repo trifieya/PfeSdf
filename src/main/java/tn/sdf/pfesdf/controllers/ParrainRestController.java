@@ -6,7 +6,7 @@ import tn.sdf.pfesdf.entities.Parrain;
 import tn.sdf.pfesdf.interfaces.IParrainService;
 
 import java.util.List;
-@CrossOrigin(origins = "*", maxAge = 3600, allowCredentials="true")
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/parrain")
 public class ParrainRestController {
