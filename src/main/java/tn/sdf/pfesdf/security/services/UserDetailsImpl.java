@@ -69,6 +69,18 @@ public class UserDetailsImpl implements UserDetails {
         this.latitude = latitude;
         this.authorities = authorities;
     }
+    public UserDetailsImpl(Long id, String username, String email, String password,
+                           Collection<? extends GrantedAuthority> authorities) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.authorities = authorities;
+    }
+
+
+
+
     public static UserDetailsImpl build(Personne personne) {
         List<GrantedAuthority> authorities = personne.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName().name()))
@@ -137,6 +149,18 @@ public class UserDetailsImpl implements UserDetails {
                 agent.getLatitude(),
                 authorities);
     }
+    public static UserDetailsImpl build(Admin admin) {
+        List<GrantedAuthority> authorities = admin.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+                .collect(Collectors.toList());
+
+        return new UserDetailsImpl(
+                admin.getIdAdmin(),
+                admin.getUsername(),
+                admin.getEmail(),
+                admin.getPassword(),
+                authorities);
+    }
 
     public static UserDetailsImpl build(Object user) {
         if (user instanceof Personne) {
@@ -145,6 +169,8 @@ public class UserDetailsImpl implements UserDetails {
             return build((Parrain) user);
         } else if (user instanceof Agent) {
             return build((Agent) user);
+        } else if (user instanceof Admin) {
+            return build((Admin) user);
         } else {
             throw new IllegalArgumentException("Invalid user type");
         }

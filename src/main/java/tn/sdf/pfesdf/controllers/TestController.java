@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 /* In TestController.java */
 // @CrossOrigin(origins = "*", maxAge = 3600)
-@CrossOrigin(origins = "*", maxAge = 3600)
+//@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600, allowCredentials="true")
+
 @RestController
 @RequestMapping("/api/test")
 public class TestController {

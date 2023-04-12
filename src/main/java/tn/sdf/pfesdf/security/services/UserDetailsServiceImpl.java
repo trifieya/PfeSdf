@@ -8,9 +8,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tn.sdf.pfesdf.entities.Admin;
 import tn.sdf.pfesdf.entities.Agent;
 import tn.sdf.pfesdf.entities.Parrain;
 import tn.sdf.pfesdf.entities.Personne;
+import tn.sdf.pfesdf.repository.AdminRepository;
 import tn.sdf.pfesdf.repository.AgentRepository;
 import tn.sdf.pfesdf.repository.ParrainRepository;
 import tn.sdf.pfesdf.repository.PersonneRepository;
@@ -24,6 +26,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     AgentRepository agentRepository;
     @Autowired
     ParrainRepository parrainRepository;
+    @Autowired
+    AdminRepository adminRepository;
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -46,6 +50,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         if(agent != null) {
             return UserDetailsImpl.build(agent);
+        }
+        Admin admin = adminRepository.findByUsername(username)
+                .orElse(null);
+
+        if(admin != null) {
+            return UserDetailsImpl.build(admin);
         }
 
         throw new UsernameNotFoundException("User Not Found with username: " + username);

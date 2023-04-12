@@ -7,10 +7,10 @@ import tn.sdf.pfesdf.entities.Agent;
 import tn.sdf.pfesdf.interfaces.IAgentService;
 
 import java.util.List;
-//@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600, allowCredentials="true")
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600, allowCredentials="true")
+//@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/agent")
+@RequestMapping("/api/agent")
 public class AgentRestController {
     @Autowired
     IAgentService agentService;

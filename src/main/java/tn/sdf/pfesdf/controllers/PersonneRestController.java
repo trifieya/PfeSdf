@@ -1,19 +1,23 @@
 package tn.sdf.pfesdf.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import tn.sdf.pfesdf.entities.Personne;
 import tn.sdf.pfesdf.interfaces.IPersonneService;
 
 import java.util.List;
-@CrossOrigin(origins = "*", maxAge = 3600)
+//@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600, allowCredentials="true")
+
 @RestController
-@RequestMapping("/personne")
+@RequestMapping("/api/personne")
 public class PersonneRestController {
     @Autowired
     IPersonneService personneService;
 
     @GetMapping("/retrieve-all-personnes")
+    @PreAuthorize("hasRole('ROLE_PERSONNE')")
     public List<Personne> getPersonnes() {
         List<Personne> listPersonne = personneService.retrieveAllPersonnes();
         return listPersonne;

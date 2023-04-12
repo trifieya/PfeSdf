@@ -24,7 +24,7 @@ import tn.sdf.pfesdf.security.services.UserDetailsServiceImpl;
 
 @Configuration
 @EnableGlobalMethodSecurity( //assure la sécurité AOP sur les méthodes. Il permet @PreAuthorize, @PostAuthorize,
-        // securedEnabled = true,
+        //securedEnabled = true,
         // jsr250Enabled = true,
         prePostEnabled = true)
 public class WebSecurityConfig {
@@ -66,13 +66,15 @@ public class WebSecurityConfig {
         http.cors().and().csrf().disable() // En désactivant cette protection, on autorise les requêtes HTTP à être effectuées à partir de n'importe quel domaine.
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and() //configure l'entrée du point d'authentification pour les erreurs d'authentification. L'implémentation unauthorizedHandler est utilisée pour renvoyer une réponse HTTP 401 (Unauthorized) lorsque l'utilisateur n'est pas authentifié.
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and() //ce qui signifie que l'application n'utilise pas de session HTTP. Cela permet d'éviter les problèmes de synchronisation de session dans les environnements distribués et garantit que chaque requête HTTP est autonome et contient toutes les informations nécessaires à l'authentification.
-                .authorizeRequests().antMatchers("/api/auth/**").permitAll() //indique que toutes les requêtes sur les URL commençant par /api/auth/ sont autorisées sans aucune restriction d'authentification.
-                .antMatchers("/api/test/**").permitAll() // indique que toutes les requêtes sur les URL commençant par /api/test/ sont également autorisées sans restriction.
-                .antMatchers("/agent/**").permitAll()
-                .antMatchers("/parrain/**").permitAll()
-                .antMatchers("/personne/**").permitAll()
-                .antMatchers("http://192.168.162.222:4200/**").permitAll()
-
+                .authorizeRequests()
+                //.antMatchers("/api/auth/**").permitAll() //indique que toutes les requêtes sur les URL commençant par /api/auth/ sont autorisées sans aucune restriction d'authentification.
+               // .antMatchers("/api/test/**").permitAll() // indique que toutes les requêtes sur les URL commençant par /api/test/ sont également autorisées sans restriction.
+                //.antMatchers("/agent/**").permitAll()
+                .antMatchers("/**").permitAll()
+                //.antMatchers("/parrain/**").permitAll()
+                //.antMatchers("/personne/**").permitAll()
+                //.antMatchers("http://192.168.162.222:4200/**").permitAll()
+                //.antMatchers("/parrain/retrieve-all-parrains").hasRole("ROLE_PARRAIN")
                 .anyRequest().authenticated(); //spécifie que toutes les autres URL nécessitent une authentification.
 
         http.authenticationProvider(authenticationProvider()); //indique que le DaoAuthenticationProvider créé dans la méthode authenticationProvider() doit être utilisé pour authentifier les utilisateurs.

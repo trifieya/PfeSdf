@@ -27,17 +27,15 @@ import tn.sdf.pfesdf.payload.request.LoginRequest;
 import tn.sdf.pfesdf.payload.request.SignupRequest;
 import tn.sdf.pfesdf.payload.response.MessageResponse;
 import tn.sdf.pfesdf.payload.response.UserInfoResponse;
-import tn.sdf.pfesdf.repository.AgentRepository;
-import tn.sdf.pfesdf.repository.ParrainRepository;
-import tn.sdf.pfesdf.repository.RoleRepository;
-import tn.sdf.pfesdf.repository.PersonneRepository;
+import tn.sdf.pfesdf.repository.*;
 import tn.sdf.pfesdf.security.jwt.JwtUtils;
 import tn.sdf.pfesdf.security.services.UserDetailsImpl;
 
 
 /* In AuthController.java */
 // @CrossOrigin(origins = "*", maxAge = 3600)
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600, allowCredentials="true")
+//@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -50,6 +48,9 @@ public class AuthController {
     AgentRepository agentRepository;
     @Autowired
     ParrainRepository parrainRepository;
+
+    @Autowired
+    AdminRepository adminRepository;
 
     @Autowired
     RoleRepository roleRepository;
@@ -107,6 +108,9 @@ public class AuthController {
         if (parrainRepository.existsByUsername(signUpRequest.getUsername())) {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Parrain Username is already taken!"));
         }
+        if (adminRepository.existsByUsername(signUpRequest.getUsername())) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: Admin Username is already taken!"));
+        }
 
         if (personneRepository.existsByEmail(signUpRequest.getEmail())) {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Person Email is already in use!"));
@@ -116,6 +120,9 @@ public class AuthController {
         }
         if (parrainRepository.existsByEmail(signUpRequest.getEmail())) {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Parrain Email is already in use!"));
+        }
+        if (adminRepository.existsByEmail(signUpRequest.getEmail())) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: Admin Email is already in use!"));
         }
 //        Role prsRole = roleRepository.findByName(ERole.ROLE_PERSONNE).orElse(null).;
 //        Role parRole = roleRepository.findByName(ERole.ROLE_PARRAIN).orElse(null);
@@ -149,6 +156,15 @@ public class AuthController {
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             parrain.setRoles(Collections.singleton(parrainRole));
             parrainRepository.save(parrain);
+        }
+        else if (signUpRequest.getRole().contains("ROLE_ADMIN")) {
+            Admin admin = new Admin(signUpRequest.getUsername(),
+                    signUpRequest.getEmail(),
+                    encoder.encode(signUpRequest.getPassword()));
+            Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+            admin.setRoles(Collections.singleton(adminRole));
+            adminRepository.save(admin);
         }
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }

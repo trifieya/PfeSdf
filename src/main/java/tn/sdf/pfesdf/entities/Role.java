@@ -31,6 +31,9 @@ import java.util.Set;
         @ManyToMany(mappedBy = "roles")
         private Set<Parrain> parrains = new HashSet<>();
 
+        @ManyToMany(mappedBy = "roles")
+        private Set<Admin> admins = new HashSet<>();
+
         public Role(ERole name) {
             this.name = name;
         }

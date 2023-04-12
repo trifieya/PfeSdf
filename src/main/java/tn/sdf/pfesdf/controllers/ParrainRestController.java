@@ -1,19 +1,25 @@
 package tn.sdf.pfesdf.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import tn.sdf.pfesdf.entities.Parrain;
 import tn.sdf.pfesdf.interfaces.IParrainService;
 
 import java.util.List;
-@CrossOrigin(origins = "*", maxAge = 3600)
+//@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600, allowCredentials="true")
+
 @RestController
-@RequestMapping("/parrain")
+@RequestMapping("/api/parrain")
 public class ParrainRestController {
     @Autowired
     IParrainService parrainService;
 
+
     @GetMapping("/retrieve-all-parrains")
+    @PreAuthorize("hasRole('ROLE_PARRAIN')")
     public List<Parrain> getParrains() {
         List<Parrain> listParrain = parrainService.retrieveAllParrains();
         return listParrain;

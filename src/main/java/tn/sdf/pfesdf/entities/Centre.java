@@ -28,6 +28,8 @@ public class Centre implements Serializable {
     private Set<Personne> personnesc;
     @ManyToOne(cascade = CascadeType.ALL)
     Ville villec;
+    @ManyToOne(cascade = CascadeType.ALL)
+    Admin adminc;
 
 
 
