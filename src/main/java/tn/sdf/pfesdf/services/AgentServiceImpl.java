@@ -1,6 +1,7 @@
 package tn.sdf.pfesdf.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import tn.sdf.pfesdf.entities.Agent;
 import tn.sdf.pfesdf.interfaces.IAgentService;
@@ -36,4 +37,11 @@ public class AgentServiceImpl implements IAgentService {
         agentRepository.deleteById(idAgent);
 
     }
+
+
+
+
+
+
+
 }

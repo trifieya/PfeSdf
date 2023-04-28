@@ -4,6 +4,7 @@ import tn.sdf.pfesdf.entities.Agent;
 import tn.sdf.pfesdf.entities.Personne;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IPersonneService {
     public List<Personne> retrieveAllPersonnes();
@@ -15,4 +16,13 @@ public interface IPersonneService {
     public Personne retrievePersonne (Long  idPersonne);
 
     public  void removePersonne(Long idPersonne);
+    public Optional<Personne>  findByEmail(String email);
+
+    void createPasswordResetTokenForUser(Personne personne, String passwordResetToken);
+
+    String validatePasswordResetToken(String token);
+
+    Object findUserByPasswordToken(String token);
+
+    void resetPassword(Personne personne, String newPassword);
 }

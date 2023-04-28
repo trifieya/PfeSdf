@@ -8,7 +8,8 @@ import java.util.List;
 public interface IParrainService {
     public List<Parrain> retrieveAllParrains();
 
-    public Parrain updateParrain (Parrain  p);
+   public Parrain updateParrain (Long idParrain,Parrain  p);
+   //public Parrain updateParrain (Parrain  p);
 
     public  Parrain addParrain(Parrain p);
 

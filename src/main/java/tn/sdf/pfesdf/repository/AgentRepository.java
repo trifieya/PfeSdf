@@ -2,6 +2,7 @@ package tn.sdf.pfesdf.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import tn.sdf.pfesdf.entities.Admin;
 import tn.sdf.pfesdf.entities.Agent;
 import tn.sdf.pfesdf.entities.Personne;
 
@@ -14,4 +15,5 @@ public interface AgentRepository extends JpaRepository<Agent, Long> {
     Boolean existsByUsername(String username);
 
     Boolean existsByEmail(String email);
+    Agent findByEmail(String email);
 }

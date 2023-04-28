@@ -62,6 +62,8 @@ public class Agent implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
+
+
     public  Agent(String username, String email, String password) {
         this.username = username;
         this.email = email;

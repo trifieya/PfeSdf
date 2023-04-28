@@ -17,7 +17,7 @@ public class PersonneRestController {
     IPersonneService personneService;
 
     @GetMapping("/retrieve-all-personnes")
-    @PreAuthorize("hasRole('ROLE_PERSONNE')")
+    //@PreAuthorize("hasRole('ROLE_PERSONNE')")
     public List<Personne> getPersonnes() {
         List<Personne> listPersonne = personneService.retrieveAllPersonnes();
         return listPersonne;

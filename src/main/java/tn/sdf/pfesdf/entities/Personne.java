@@ -74,6 +74,7 @@ public class Personne implements Serializable {
     @OneToOne
     Profil profil;
 
+
     public  Personne (String username, String email, String password) {
         this.username = username;
         this.email = email;

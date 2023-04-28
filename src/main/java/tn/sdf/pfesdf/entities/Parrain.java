@@ -49,6 +49,8 @@ public class Parrain implements Serializable {
     //private String role;
     private Float logitude;
     private Float latitude;
+    @Column(name = "resettoken")
+    private String resettoken;
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parrain")
     private Set<Personne>personnespar;
@@ -58,6 +60,7 @@ public class Parrain implements Serializable {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
+
 
     public Parrain(String username, String email, String password) {
         this.username = username;
