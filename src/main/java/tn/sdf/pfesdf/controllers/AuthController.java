@@ -34,6 +34,8 @@ import tn.sdf.pfesdf.payload.response.UserInfoResponse;
 import tn.sdf.pfesdf.repository.*;
 import tn.sdf.pfesdf.security.jwt.JwtUtils;
 import tn.sdf.pfesdf.security.services.UserDetailsImpl;
+import tn.sdf.pfesdf.services.AdminServiceImpl;
+import tn.sdf.pfesdf.services.AgentServiceImpl;
 import tn.sdf.pfesdf.services.ParrainServiceImpl;
 import tn.sdf.pfesdf.services.PersonneServiceImpl;
 
@@ -73,6 +75,10 @@ public class AuthController {
     ParrainServiceImpl parrainService;
     @Autowired
     PersonneServiceImpl personneService;
+    @Autowired
+    AgentServiceImpl agentService;
+    @Autowired
+    AdminServiceImpl adminService;
     @Autowired
     RegistrationCompleteEventListener eventListener;
 
@@ -199,29 +205,81 @@ public class AuthController {
                                        final HttpServletRequest servletRequest)
             throws MessagingException, UnsupportedEncodingException {
 
-        Optional<Personne> user = personneService.findByEmail(passwordResetRequest.getEmail());
+        Optional<Personne> personne = personneService.findByEmail(passwordResetRequest.getEmail());
+        Optional<Admin> admin = adminService.findByEmail(passwordResetRequest.getEmail());
+        Optional<Agent> agent = agentService.findByEmail(passwordResetRequest.getEmail());
+        Optional<Parrain> parrain = parrainService.findByEmail(passwordResetRequest.getEmail());
         String passwordResetUrl = "";
-        if (user.isPresent()) {
+        if (personne.isPresent()) {
             String passwordResetToken = UUID.randomUUID().toString();
-            personneService.createPasswordResetTokenForUser(user.get(), passwordResetToken);
-            passwordResetUrl = passwordResetEmailLink(user.get(), applicationUrl(servletRequest), passwordResetToken);
+            personneService.createPasswordResetTokenForPersonne(personne.get(), passwordResetToken);
+            passwordResetUrl = passwordResetEmailLinkPersonne(personne.get(), applicationUrl(servletRequest), passwordResetToken);
         }
-        else{
-            return "Email does not exist";
+        if (admin.isPresent()) {
+            String passwordResetToken = UUID.randomUUID().toString();
+            adminService.createPasswordResetTokenForAdmin(admin.get(), passwordResetToken);
+            passwordResetUrl = passwordResetEmailLinkAdmin(admin.get(), applicationUrl(servletRequest), passwordResetToken);
         }
+        if (agent.isPresent()) {
+            String passwordResetToken = UUID.randomUUID().toString();
+            agentService.createPasswordResetTokenForAgent(agent.get(), passwordResetToken);
+            passwordResetUrl = passwordResetEmailLinkAgent(agent.get(), applicationUrl(servletRequest), passwordResetToken);
+        }
+        if (parrain.isPresent()) {
+            String passwordResetToken = UUID.randomUUID().toString();
+            parrainService.createPasswordResetTokenForParrain(parrain.get(), passwordResetToken);
+            passwordResetUrl = passwordResetEmailLinkParrain(parrain.get(), applicationUrl(servletRequest), passwordResetToken);
+        }
+
         return passwordResetUrl;
 
     }
 
 
-    private String passwordResetEmailLink(Personne user, String applicationUrl,
+    private String passwordResetEmailLinkPersonne(Personne user, String applicationUrl,
                                           String passwordToken) throws MessagingException, UnsupportedEncodingException {
 
 
         String   url = applicationUrl + "/api/auth/reset-password?token=" + passwordToken;
 
-            eventListener.sendPasswordResetVerificationEmail(user,url);
+            eventListener.sendPasswordResetVerificationEmailPersonne(user,url);
             log.info("Click the link to reset your password :  {}", url);
+
+
+        return url;
+    }
+    private String passwordResetEmailLinkAdmin(Admin user, String applicationUrl,
+                                          String passwordToken) throws MessagingException, UnsupportedEncodingException {
+
+
+        String   url = applicationUrl + "/api/auth/reset-password?token=" + passwordToken;
+
+        eventListener.sendPasswordResetVerificationEmailAdmin(user,url);
+        log.info("Click the link to reset your password :  {}", url);
+
+
+        return url;
+    }
+    private String passwordResetEmailLinkAgent(Agent user, String applicationUrl,
+                                          String passwordToken) throws MessagingException, UnsupportedEncodingException {
+
+
+        String   url = applicationUrl + "/api/auth/reset-password?token=" + passwordToken;
+
+        eventListener.sendPasswordResetVerificationEmailAgent(user,url);
+        log.info("Click the link to reset your password :  {}", url);
+
+
+        return url;
+    }
+    private String passwordResetEmailLinkParrain(Parrain user, String applicationUrl,
+                                          String passwordToken) throws MessagingException, UnsupportedEncodingException {
+
+
+        String   url = applicationUrl + "/api/auth/reset-password?token=" + passwordToken;
+
+        eventListener.sendPasswordResetVerificationEmailParrain(user,url);
+        log.info("Click the link to reset your password :  {}", url);
 
 
         return url;
@@ -230,8 +288,13 @@ public class AuthController {
     @PostMapping("/reset-password")
     public String resetPassword(@RequestBody PasswordResetRequest passwordResetRequest,
                                 @RequestParam("token") String token){
-        String tokenVerificationResult = personneService.validatePasswordResetToken(token);
-        if (!tokenVerificationResult.equalsIgnoreCase("valid")) {
+        String tokenVerificationResult1 = personneService.validatePasswordResetToken(token);
+        String tokenVerificationResult2 = parrainService.validatePasswordResetToken(token);
+        String tokenVerificationResult3 = agentService.validatePasswordResetToken(token);
+        String tokenVerificationResult4 = adminService.validatePasswordResetToken(token);
+
+        //Personne
+        if (!tokenVerificationResult1.equalsIgnoreCase("valid")) {
             return "Invalid token password reset token";
         }
         Optional<Personne> personne = Optional.ofNullable(personneService.findUserByPasswordToken(token));
@@ -239,8 +302,43 @@ public class AuthController {
             personneService.resetPassword(personne.get(), passwordResetRequest.getNewPassword());
             return "Password has been reset successfully";
         }
+        //Parrain
+
+        if (!tokenVerificationResult2.equalsIgnoreCase("valid")) {
+            return "Invalid token password reset token";
+        }
+        Optional<Parrain> parrain = Optional.ofNullable(parrainService.findUserByPasswordToken(token));
+        if (parrain.isPresent()) {
+            parrainService.resetPassword(parrain.get(), passwordResetRequest.getNewPassword());
+            return "Password has been reset successfully";
+        }
+        //Agent
+
+        if (!tokenVerificationResult3.equalsIgnoreCase("valid")) {
+            return "Invalid token password reset token";
+        }
+        Optional<Agent> agent = Optional.ofNullable(agentService.findUserByPasswordToken(token));
+        if (agent.isPresent()) {
+            agentService.resetPassword(agent.get(), passwordResetRequest.getNewPassword());
+            return "Password has been reset successfully";
+        }
+
+        //Admin
+
+        if (!tokenVerificationResult4.equalsIgnoreCase("valid")) {
+            return "Invalid token password reset token";
+        }
+        Optional<Admin> admin = Optional.ofNullable(adminService.findUserByPasswordToken(token));
+        if (admin.isPresent()) {
+            adminService.resetPassword(admin.get(), passwordResetRequest.getNewPassword());
+            return "Password has been reset successfully";
+        }
+
+
         return "Invalid password reset token";
     }
+
+
     public String applicationUrl(HttpServletRequest request) {
         return "http://"+request.getServerName()+":"
                 +request.getServerPort()+request.getContextPath();

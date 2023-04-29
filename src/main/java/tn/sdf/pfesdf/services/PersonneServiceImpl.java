@@ -52,20 +52,20 @@ public class PersonneServiceImpl implements IPersonneService {
     }
 
     @Override
-    public void createPasswordResetTokenForUser(Personne personne, String passwordResetToken) {
-        passwordResetTokenService.createPasswordResetTokenForUser(personne,passwordResetToken);
+    public void createPasswordResetTokenForPersonne(Personne personne, String passwordResetToken) {
+        passwordResetTokenService.createPasswordResetTokenForPersonne(personne,passwordResetToken);
 
     }
 
     @Override
     public String validatePasswordResetToken(String token) {
-        return passwordResetTokenService.validatePasswordResetToken(token);
+        return passwordResetTokenService.validatePasswordResetTokenPersonne(token);
 
     }
 
     @Override
     public Personne findUserByPasswordToken(String token) {
-        return passwordResetTokenService.findUserByPasswordToken(token).get();
+        return passwordResetTokenService.findPersoneByPasswordToken(token).orElse(null);
     }
 
     @Override

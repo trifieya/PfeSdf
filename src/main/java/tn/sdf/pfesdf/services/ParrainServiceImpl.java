@@ -1,6 +1,7 @@
 package tn.sdf.pfesdf.services;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -16,17 +17,24 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class ParrainServiceImpl implements IParrainService {
     @Autowired
     ParrainRepository parrainRepository;
+
     private final JavaMailSender mailSender;
+
     @Autowired
     PasswordEncoder encoder;
+    @Autowired
+    PasswordResetTokenService passwordResetTokenService;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public List<Parrain> retrieveAllParrains() {
@@ -63,10 +71,37 @@ public class ParrainServiceImpl implements IParrainService {
 
     }
 
+    @Override
+    public Parrain findUserByPasswordToken(String token) {
+        return passwordResetTokenService.findParrainByPasswordToken(token).orElse(null);
 
+    }
 
-    public Parrain getUserByEmail(String email){
+    @Override
+    public void createPasswordResetTokenForParrain(Parrain parrain, String passwordResetToken) {
+        passwordResetTokenService.createPasswordResetTokenForParrain(parrain,passwordResetToken);
+
+    }
+
+    @Override
+    public Optional<Parrain> findByEmail(String email) {
         return parrainRepository.findByEmail(email);
     }
+
+    @Override
+    public String validatePasswordResetToken(String token) {
+        return passwordResetTokenService.validatePasswordResetTokenParrain(token);
+    }
+
+    @Override
+    public void resetPassword(Parrain parrain, String newPassword) {
+        parrain.setPassword(passwordEncoder.encode(newPassword));
+        parrainRepository.save(parrain);
+    }
+
+
+//    public Parrain getUserByEmail(String email){
+//        return parrainRepository.findByEmail(email);
+//    }
 
 }

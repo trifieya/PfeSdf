@@ -18,7 +18,7 @@ public interface IPersonneService {
     public  void removePersonne(Long idPersonne);
     public Optional<Personne>  findByEmail(String email);
 
-    void createPasswordResetTokenForUser(Personne personne, String passwordResetToken);
+    void createPasswordResetTokenForPersonne(Personne personne, String passwordResetToken);
 
     String validatePasswordResetToken(String token);
 
