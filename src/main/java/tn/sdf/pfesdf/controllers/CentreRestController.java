@@ -3,6 +3,7 @@ package tn.sdf.pfesdf.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import tn.sdf.pfesdf.entities.Centre;
+import tn.sdf.pfesdf.entities.Profil;
 import tn.sdf.pfesdf.interfaces.ICentreService;
 
 import java.util.List;
@@ -38,5 +39,17 @@ public class CentreRestController {
     public void removeCentre(@PathVariable("idCentre") Long idCentre) {
 
         centreService.removeCentre(idCentre);
+    }
+
+    @PutMapping("/update-Centre")
+    public Centre updateCentre(@RequestBody Centre c) {
+        Centre centre= centreService.updateCentre(c);
+        return centre;
+    }
+    @PostMapping("/enregistrer")
+    public void enregistrerCoordonnees(@RequestParam Long idCentre,
+                                       @RequestParam Float latitude,
+                                       @RequestParam Float longitude) {
+        centreService.enregistrerCoordonnees(idCentre, latitude, longitude);
     }
 }

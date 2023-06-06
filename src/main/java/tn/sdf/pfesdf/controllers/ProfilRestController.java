@@ -47,4 +47,9 @@ public class ProfilRestController {
         return Profil;
     }
 
+    @PostMapping("/{profilId}/assign-centre")
+    public void assignNearestCentre(@PathVariable Long profilId) {
+        profilService.assignNearestCentre(profilId);
+    }
+
 }

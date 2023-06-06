@@ -1,20 +1,36 @@
 package tn.sdf.pfesdf.controllers;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import tn.sdf.pfesdf.entities.Parrain;
 import tn.sdf.pfesdf.entities.Personne;
+import tn.sdf.pfesdf.entities.Profil;
 import tn.sdf.pfesdf.interfaces.IPersonneService;
+import tn.sdf.pfesdf.repository.PersonneRepository;
+import tn.sdf.pfesdf.services.FTPServiceImp;
 
 import java.util.List;
+import java.util.Optional;
+
 //@CrossOrigin(origins = "*", maxAge = 3600)
 @CrossOrigin(origins = "http://localhost:4200", maxAge = 3600, allowCredentials="true")
-
+@AllArgsConstructor
 @RestController
 @RequestMapping("/api/personne")
 public class PersonneRestController {
     @Autowired
     IPersonneService personneService;
+    @Autowired
+    PersonneRepository personneRepository;
+
+    //FTPServiceImp ftpServiceImp;
 
     @GetMapping("/retrieve-all-personnes")
     //@PreAuthorize("hasRole('ROLE_PERSONNE')")
@@ -41,9 +57,64 @@ public class PersonneRestController {
         personneService.removePersonne(idPersonne);
     }
 
-    @PutMapping("/update-personne")
-    public Personne updatePersonne(@RequestBody Personne per) {
-        Personne personne= personneService.updatePersonne(per);
-        return personne;
+    @PutMapping("/update-personne/{idPersonne}")
+    public ResponseEntity <Personne> updatePersonne(@PathVariable("idPersonne")Long idPersonne,@RequestBody Personne p) {
+        Optional<Personne> personneData = personneRepository.findById(idPersonne);
+        if (personneData.isPresent()) {
+            Personne _personne = personneData.get();
+            _personne.setUsername(p.getUsername());
+            _personne.setEmail(p.getEmail());
+            _personne.setPassword(p.getPassword());
+            _personne.setNom(p.getNom());
+
+
+            return new ResponseEntity<>(personneRepository.save(_personne), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
+
+
+
+
+    @PostMapping("/upload/{idPersonne}")
+    public ResponseEntity<Personne> uploadFile(@RequestParam("file") MultipartFile file,
+                                               @PathVariable Long idPersonne) {
+        Personne personne = personneService.addFile(file, idPersonne);
+        if (personne == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(personne);
+    }
+    @DeleteMapping("/deletefile/{idPersonne}/file")
+    public void uploadFile(@PathVariable Long idPersonne) {
+         personneService.removeFile(idPersonne);
+
+    }
+
+    @PostMapping("/enregistrer")
+    public void enregistrerCoordonnees(@RequestParam Long idPersonne,
+                                       @RequestParam Float latitude,
+                                       @RequestParam Float longitude) {
+        personneService.enregistrerCoordonnees(idPersonne, latitude, longitude);
+    }
+
+//    @GetMapping("/personnes/{id}/photo")
+//    public ResponseEntity<byte[]> getPhoto(@PathVariable Long id) {
+//        String photoUrl = personneService.getPhotoUrl(id);
+//        if (photoUrl == null) {
+//            return ResponseEntity.notFound().build();
+//        }
+//        byte[] photoBytes = ftpServiceImp.getFileBytes(photoUrl);
+//        if (photoBytes == null) {
+//            return ResponseEntity.notFound().build();
+//        }
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.IMAGE_JPEG);
+//        headers.setContentLength(photoBytes.length);
+//        return new ResponseEntity<>(photoBytes, headers, HttpStatus.OK);
+//    }
+
+
+
 }

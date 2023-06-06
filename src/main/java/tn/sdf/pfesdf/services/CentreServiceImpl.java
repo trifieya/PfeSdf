@@ -3,6 +3,7 @@ package tn.sdf.pfesdf.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tn.sdf.pfesdf.entities.Centre;
+import tn.sdf.pfesdf.entities.Personne;
 import tn.sdf.pfesdf.interfaces.ICentreService;
 import tn.sdf.pfesdf.repository.CentreRepository;
 
@@ -24,7 +25,8 @@ public class CentreServiceImpl implements ICentreService {
 
     @Override
     public Centre addCentre(Centre c) {
-        return centreRepository.save(c);
+        Centre centre = centreRepository.save(c);
+        return centre;
     }
 
     @Override
@@ -36,5 +38,13 @@ public class CentreServiceImpl implements ICentreService {
     public void removeCentre(Long idCentre) {
         centreRepository.deleteById(idCentre);
 
+    }
+    @Override
+    public void enregistrerCoordonnees(Long idCentre,Float latitude, Float longitude) {
+
+        Centre centre = centreRepository.findById(idCentre).orElse(null);
+        centre.setLatitude(latitude);
+        centre.setLongitude(longitude);
+        centreRepository.save(centre);
     }
 }

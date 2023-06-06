@@ -1,5 +1,6 @@
 package tn.sdf.pfesdf.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -25,6 +26,7 @@ public class Centre implements Serializable {
     private Float latitude;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "centre")
+    @JsonIgnore
     private Set<Personne> personnesc;
     @ManyToOne(cascade = CascadeType.ALL)
     Ville villec;

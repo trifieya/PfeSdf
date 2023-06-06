@@ -47,6 +47,7 @@ import tn.sdf.pfesdf.services.PersonneServiceImpl;
 //@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequiredArgsConstructor
+
 @RequestMapping("/api/auth")
 public class AuthController {
     @Autowired
@@ -159,6 +160,9 @@ public class AuthController {
             Personne personne = new Personne(signUpRequest.getUsername(),
                     signUpRequest.getEmail(),
                     encoder.encode(signUpRequest.getPassword()));
+            Profil profile = new Profil();
+            personne.setProfil(profile);
+            profile.setProfilpresonne(personne);
             Role personneRole = roleRepository.findByName(ERole.ROLE_PERSONNE)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             personne.setRoles(Collections.singleton(personneRole));

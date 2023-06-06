@@ -69,13 +69,13 @@ public class WebSecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/api/auth/**").permitAll() //indique que toutes les requêtes sur les URL commençant par /api/auth/ sont autorisées sans aucune restriction d'authentification.
                .antMatchers("/swagger-ui/**").permitAll() // indique que toutes les requêtes sur les URL commençant par /api/test/ sont également autorisées sans restriction.
-                //.antMatchers("/agent/**").permitAll()
              //   .antMatchers("/**").permitAll()
                 //.antMatchers("/parrain/**").permitAll()
                 //.antMatchers("/personne/**").permitAll()
                 //.antMatchers("http://192.168.162.222:4200/**").permitAll()
                 //.antMatchers("/parrain/retrieve-all-parrains").hasRole("ROLE_PARRAIN")
                 .anyRequest().authenticated(); //spécifie que toutes les autres URL nécessitent une authentification.
+        http.csrf().disable().authorizeRequests();
 
         http.authenticationProvider(authenticationProvider()); //indique que le DaoAuthenticationProvider créé dans la méthode authenticationProvider() doit être utilisé pour authentifier les utilisateurs.
 

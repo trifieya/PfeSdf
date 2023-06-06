@@ -1,5 +1,6 @@
 package tn.sdf.pfesdf.entities;
 
+import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 
 import javax.persistence.*;
@@ -16,6 +17,8 @@ public class Ville implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idVille;
     private String nomVille;
+
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "ville")
     private Set<Personne> personnesv;
     @ManyToOne

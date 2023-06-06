@@ -1,6 +1,9 @@
 package tn.sdf.pfesdf.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -22,6 +25,7 @@ import java.util.Set;
                 @UniqueConstraint(columnNames = "username"),
                 @UniqueConstraint(columnNames = "email")
         })
+
 public class Personne implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -61,17 +65,23 @@ public class Personne implements Serializable {
 
     @ManyToOne
     Centre centre;
+
     @ManyToOne
     Ville ville;
     @ManyToMany(cascade = CascadeType.ALL)
     private Set<Programme> programmes;
+
     @ManyToOne
     Parrain parrain;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "personnerdv")
+    //@JsonManagedReference
     private Set<RendezVous>rendezVousSet;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "personnef")
+    //@JsonManagedReference
     private Set<FeedBack>feedBacks;
-    @OneToOne
+//evider occurence donnée loop
+    @JsonIgnore
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "profilpresonne")
     Profil profil;
 
 
