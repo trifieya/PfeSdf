@@ -1,9 +1,14 @@
 package tn.sdf.pfesdf.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -11,20 +16,30 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.webjars.NotFoundException;
+import tn.sdf.pfesdf.entities.Agent;
 import tn.sdf.pfesdf.entities.Parrain;
 import tn.sdf.pfesdf.entities.Personne;
 import tn.sdf.pfesdf.interfaces.IPersonneService;
+import tn.sdf.pfesdf.repository.AgentRepository;
+import tn.sdf.pfesdf.repository.ParrainRepository;
 import tn.sdf.pfesdf.repository.PersonneRepository;
 import tn.sdf.pfesdf.security.services.UserDetailsImpl;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PersonneServiceImpl implements IPersonneService {
     @Autowired
     PersonneRepository personneRepository;
+    @Autowired
+    ParrainRepository parrainRepository;
+    @Autowired
+    AgentRepository agentRepository;
     @Autowired
     PasswordResetTokenService passwordResetTokenService;
     private final PasswordEncoder passwordEncoder;
@@ -34,8 +49,10 @@ public class PersonneServiceImpl implements IPersonneService {
     }
 
     @Override
-    public Personne updatePersonne(Long idPersonne,Personne p) {return personneRepository.save(p);
+    public Personne updatePersonne(Long idPersonne,Personne p) {
+        return personneRepository.save(p);
     }
+
 
 
 
@@ -115,6 +132,10 @@ public class PersonneServiceImpl implements IPersonneService {
         return personne.getPhoto();
     }
 
+    @Override
+    public void enregistrerCoordonnees(Long id, Float latitude, Float longitude) {
+
+    }
 
 
     @Override
@@ -131,15 +152,146 @@ public class PersonneServiceImpl implements IPersonneService {
 
     }
 
-    @Override
-    public void enregistrerCoordonnees(Long idPersonne,Float latitude, Float longitude) {
+//    @Override
+//    public void enregistrerCoordonnees(Long idPersonne,Long idParrain,Long idAgent,Float latitude, Float longitude) {
+//
+//        Personne personne = personneRepository.findById(idPersonne).orElse(null);
+//        Agent agent = agentRepository.findById(idAgent).orElse(null);
+//        Parrain parrain = parrainRepository.findById(idParrain).orElse(null);
+//        if(personne!=null){
+//        personne.setLatitude(latitude);
+//        personne.setLogitude(longitude);
+//        personneRepository.save(personne);
+//        }  if (agent!=null) {
+//            agent.setLatitude(latitude);
+//            agent.setLogitude(longitude);
+//            agentRepository.save(agent);
+//
+//        }  if (parrain!=null) {
+//            parrain.setLatitude(latitude);
+//            parrain.setLogitude(longitude);
+//            parrainRepository.save(parrain);
+//        }
+//        else {
+//            log.info("no id found");
+//        }
+//
+//    }
 
-        Personne personne = personneRepository.findById(idPersonne).orElse(null);
-        personne.setLatitude(latitude);
-        personne.setLogitude(longitude);
-        personneRepository.save(personne);
+
+
+// ...
+
+    public Object getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null) {
+
+            Object principal = authentication.getPrincipal();
+
+           return principal;
+        }
+
+        // Gérer le cas où l'utilisateur n'est pas authentifié ou n'est pas une instance des classes utilisateur attendues
+        // Vous pouvez retourner null ou lancer une exception selon vos besoins.
+        // Par exemple :
+        throw new RuntimeException("Utilisateur actuel non trouvé ou n'est pas une instance des classes utilisateur attendues.");
     }
 
 
 
+
+@Override
+    public void changeLocation(Float newLongitude, Float newLatitude) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+
+        if (authorities.contains(new SimpleGrantedAuthority("ROLE_AGENT"))) {
+            Optional<Agent> agentOptional = agentRepository.findByUsername(username);
+            if (agentOptional.isPresent()) {
+                Agent agent = agentOptional.get();
+                agent.setLogitude(newLongitude);
+                agent.setLatitude(newLatitude);
+                agentRepository.save(agent);
+            } else {
+                throw new NotFoundException("Agent non trouvé");
+                // Gérer le cas où l'agent n'est pas trouvé
+            }
+        } else if (authorities.contains(new SimpleGrantedAuthority("ROLE_PARRAIN"))) {
+            Optional<Parrain> parrainOptional = parrainRepository.findByUsername(username);
+            if (parrainOptional.isPresent()) {
+                Parrain parrain = parrainOptional.get();
+                parrain.setLogitude(newLongitude);
+                parrain.setLatitude(newLatitude);
+                parrainRepository.save(parrain);
+            } else {
+                throw new NotFoundException("Parrain non trouvé");
+                // Gérer le cas où le parrain n'est pas trouvé
+            }
+        } else if (authorities.contains(new SimpleGrantedAuthority("ROLE_PERSONNE"))) {
+            Optional<Personne> personneOptional = personneRepository.findByUsername(username);
+            if (personneOptional.isPresent()) {
+                Personne personne = personneOptional.get();
+                personne.setLogitude(newLongitude);
+                personne.setLatitude(newLatitude);
+                personneRepository.save(personne);
+            } else {
+                throw new NotFoundException("Personne non trouvée");
+                // Gérer le cas où la personne n'est pas trouvée
+            }
+        }
+    }
+
+//    @Override
+//    public void editprofile(Float newLongitude, Float newLatitude) {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        String username = authentication.getName();
+//        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+//
+//        if (authorities.contains(new SimpleGrantedAuthority("ROLE_AGENT"))) {
+//            Optional<Agent> agentOptional = agentRepository.findByUsername(username);
+//            if (agentOptional.isPresent()) {
+//                Agent agent = agentOptional.get();
+//                agent.setLogitude(newLongitude);
+//                agent.setLatitude(newLatitude);
+//                agentRepository.save(agent);
+//            } else {
+//                throw new NotFoundException("Agent non trouvé");
+//                // Gérer le cas où l'agent n'est pas trouvé
+//            }
+//        } else if (authorities.contains(new SimpleGrantedAuthority("ROLE_PARRAIN"))) {
+//            Optional<Parrain> parrainOptional = parrainRepository.findByUsername(username);
+//            if (parrainOptional.isPresent()) {
+//                Parrain parrain = parrainOptional.get();
+//                parrain.setLogitude(newLongitude);
+//                parrain.setLatitude(newLatitude);
+//                parrainRepository.save(parrain);
+//            } else {
+//                throw new NotFoundException("Parrain non trouvé");
+//                // Gérer le cas où le parrain n'est pas trouvé
+//            }
+//        } else if (authorities.contains(new SimpleGrantedAuthority("ROLE_PERSONNE"))) {
+//            Optional<Personne> personneOptional = personneRepository.findByUsername(username);
+//            if (personneOptional.isPresent()) {
+//                Personne personne = personneOptional.get();
+//                personne.setLogitude(newLongitude);
+//                personne.setLatitude(newLatitude);
+//                personneRepository.save(personne);
+//            } else {
+//                throw new NotFoundException("Personne non trouvée");
+//                // Gérer le cas où la personne n'est pas trouvée
+//            }
+//        }
+//    }
+
+
 }
+
+
+
+
+
+
+
+

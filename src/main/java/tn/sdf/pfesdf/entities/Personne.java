@@ -70,9 +70,12 @@ public class Personne implements Serializable {
     Ville ville;
     @ManyToMany(cascade = CascadeType.ALL)
     private Set<Programme> programmes;
-
     @ManyToOne
     Parrain parrain;
+    @ManyToOne
+    Agent agent;
+    @Enumerated(EnumType.STRING)
+    private Discipline discipline;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "personnerdv")
     //@JsonManagedReference
     private Set<RendezVous>rendezVousSet;

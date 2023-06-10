@@ -51,5 +51,29 @@ public class ProfilRestController {
     public void assignNearestCentre(@PathVariable Long profilId) {
         profilService.assignNearestCentre(profilId);
     }
+    @PostMapping("/{profilId}/assign-agent-disponible")
+    public void assignrprofilagentdisponibilité(@PathVariable Long profilId) {
+        profilService.assignrprofilagentdisponibilité(profilId);
+    }
+    @PostMapping("/{profilId}/assign-parrain-disponible")
+    public void assignrprofilparraindisponibilité(@PathVariable Long profilId) {
+        profilService.assignrprofilparraindisponibilité(profilId);
+    }
+    @PostMapping("/{profilId}/assign-parrain-adequat")
+    public void assignprofilparrainadequat(@PathVariable Long profilId) {
+        profilService.assignprofilparrainadequat(profilId);
+    }
+    @PostMapping("/{profilId}/assign-agent-adequat")
+    public void assignprofilagentadequat(@PathVariable Long profilId) {
+        profilService.assignprofilagentadequat(profilId);
+    }
+    @PostMapping("/{profilId}/assign-agent-proche")
+    public void assignprofilagentproche(@PathVariable Long profilId) {
+        profilService.assignprofilagentproche(profilId);
+    }
+    @PostMapping("/{profilId}/assign-parrain-proche")
+    public void assignprofilparrainproche(@PathVariable Long profilId) {
+        profilService.assignprofilparrainproche(profilId);
+    }
 
 }

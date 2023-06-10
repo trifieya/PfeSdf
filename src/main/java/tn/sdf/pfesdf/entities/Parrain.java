@@ -46,6 +46,10 @@ public class Parrain implements Serializable {
     private Gender gender;
     private Integer phnum;
     private Integer cin;
+    private Integer nbmax=5;
+    private Integer nbencours=0;
+    @Enumerated(EnumType.STRING)
+    private Discipline discipline;
     //private String role;
     private Float logitude;
     private Float latitude;

@@ -24,4 +24,5 @@ public interface ParrainRepository extends JpaRepository<Parrain, Long> {
 
 
 
+
 }

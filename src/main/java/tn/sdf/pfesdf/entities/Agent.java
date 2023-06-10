@@ -44,14 +44,21 @@ public class Agent implements Serializable {
     private String password;
     @Enumerated(EnumType.STRING)
     private Gender gender;
+    @Enumerated(EnumType.STRING)
+    private Discipline discipline;
     private Integer phnum;
     private Integer cin;
+    private Integer nbmax=5;
+    private Integer nbencours=0;
     //private String role;
     private Float logitude;
     private Float latitude;
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "agent")
     private Set<RendezVous>rendezVousag;
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "agent")
+    private Set<Personne>personnesparrain;
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "agental")
     private Set<Alerte>alertes;
@@ -69,4 +76,5 @@ public class Agent implements Serializable {
         this.email = email;
         this.password = password;
     }
+
 }

@@ -92,12 +92,20 @@ public class PersonneRestController {
 
     }
 
-    @PostMapping("/enregistrer")
-    public void enregistrerCoordonnees(@RequestParam Long idPersonne,
-                                       @RequestParam Float latitude,
-                                       @RequestParam Float longitude) {
-        personneService.enregistrerCoordonnees(idPersonne, latitude, longitude);
+//    @PostMapping("/enregistrer")
+//    public void enregistrerCoordonnees(
+//                                       @RequestParam Long id,
+//                                       @RequestParam Float latitude,
+//                                       @RequestParam Float longitude) {
+//        personneService.enregistrerCoordonnees(id,latitude, longitude);
+//    }
+    @GetMapping("/current")
+    //@PreAuthorize("hasRole('ROLE_PERSONNE')")
+    public Object getCurrentUser(){
+
+        return personneService.getCurrentUser() ;
     }
+
 
 //    @GetMapping("/personnes/{id}/photo")
 //    public ResponseEntity<byte[]> getPhoto(@PathVariable Long id) {
@@ -113,6 +121,17 @@ public class PersonneRestController {
 //        headers.setContentType(MediaType.IMAGE_JPEG);
 //        headers.setContentLength(photoBytes.length);
 //        return new ResponseEntity<>(photoBytes, headers, HttpStatus.OK);
+//    }
+
+    @PostMapping("/change-location")
+    public ResponseEntity<String> changeLocation(@RequestParam Float newLongitude, @RequestParam Float newLatitude) {
+        personneService.changeLocation(newLongitude, newLatitude);
+        return ResponseEntity.ok("Longitude et latitude modifiées avec succès");
+    }
+//    @PutMapping("/update-personne/{idPersonne}")
+//    public ResponseEntity<String> editProfile() {
+//        personneService.editProfile();
+//        return ResponseEntity.ok("USER modifiées avec succès");
 //    }
 
 
