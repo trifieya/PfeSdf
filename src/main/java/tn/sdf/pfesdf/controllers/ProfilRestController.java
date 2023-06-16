@@ -17,10 +17,14 @@ public class ProfilRestController {
     IProfilService profilService;
 
     @GetMapping("/retrieve-all-profils")
-    //@PreAuthorize("hasRole('ROLE_Profil')")
     public List<Profil> getProfils() {
         List<Profil> listProfil = profilService.retrieveAllProfils();
         return listProfil;
+    }
+    @GetMapping("/profils-by-agent")
+    public List<Profil> getProfilsByAgent() {
+        List<Profil> listProfilByAgent = profilService.retrieveProfilsByAgent();
+        return listProfilByAgent;
     }
     @GetMapping("/retrieve-profil/{idProfil}")
     public Profil retrieveProfil(@PathVariable("idProfil") Long idProfil) {

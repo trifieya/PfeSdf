@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.swing.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 @Getter
 @Setter
@@ -17,14 +18,14 @@ public class RendezVous implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idRdv;
-    private LocalDate dateRdv;
-    private LocalTime timeRdv;
+    private LocalDateTime dateRdv;
+    private LocalDateTime dateFinRdv;
     private String description;
     private String lieu;
     private String motif;
     private Boolean conclu;
     @ManyToOne
-    Personne personnerdv;
+    Profil profilrdv;
     @ManyToOne
     Agent agent;
 

@@ -1,13 +1,19 @@
 package tn.sdf.pfesdf.services;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import tn.sdf.pfesdf.entities.*;
 import tn.sdf.pfesdf.interfaces.IProfilService;
 import tn.sdf.pfesdf.repository.*;
+import tn.sdf.pfesdf.security.services.UserDetailsImpl;
 
+import java.util.Collection;
 import java.util.List;
 @Slf4j
 @Service
@@ -28,6 +34,21 @@ public class ProfilServiceImpl  implements IProfilService {
 
         return profilRepository.findAll();
     }
+
+    @Override
+    public List<Profil> retrieveProfilsByAgent() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long agentId = ((UserDetailsImpl) authentication.getPrincipal()).getId();
+        Agent connectedAgent = agentRepository.findById(agentId).orElse(null);//car f save je dois passer un agent c pour ça 3ayatet lel agent li ando agentid li connecté
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();//authorities heya li feha les roles et les permissions
+        if (connectedAgent == null || !authorities.contains(new SimpleGrantedAuthority("ROLE_AGENT"))) {
+            throw new RuntimeException("Error retrieving profiles by agent!");
+        }
+        return profilRepository.findByProfilpresonneAgent(connectedAgent);
+    }
+
+
+
 
     @Override
     public Profil updateProfil(Profil pro) {
@@ -96,7 +117,7 @@ public class ProfilServiceImpl  implements IProfilService {
         return distance;
     }
     //affecter à un agent selon disponibilité
-    public void assignrprofilagentdisponibilité(Long idProfil){
+    public ResponseEntity<Agent> assignrprofilagentdisponibilité(Long idProfil){
             Profil profil = profilRepository.findById(idProfil).orElse(null);
             Personne personne = profil.getProfilpresonne();
             Agent agentDisponible =null;
@@ -122,7 +143,7 @@ public class ProfilServiceImpl  implements IProfilService {
             else {
                 log.info("aucun agent n'est disponible pour le moment");
             }
-
+        return ResponseEntity.ok(agentDisponible);
         }
 
     //affecter à un agent selon disponibilité

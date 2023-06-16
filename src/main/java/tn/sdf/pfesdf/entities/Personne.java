@@ -76,9 +76,7 @@ public class Personne implements Serializable {
     Agent agent;
     @Enumerated(EnumType.STRING)
     private Discipline discipline;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "personnerdv")
-    //@JsonManagedReference
-    private Set<RendezVous>rendezVousSet;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "personnef")
     //@JsonManagedReference
     private Set<FeedBack>feedBacks;

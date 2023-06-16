@@ -24,7 +24,10 @@ public class Profil implements Serializable {
     private LocalDate dateInscriPlatform;
     @Enumerated(EnumType.STRING)
     private Situation situation;
-
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "profilrdv")
+    //@JsonManagedReference
+    private Set<RendezVous>rendezVousSet;
     @OneToOne
     Personne profilpresonne;
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "profildoc")
