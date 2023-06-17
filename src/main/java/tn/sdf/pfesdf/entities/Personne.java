@@ -39,9 +39,9 @@ public class Personne implements Serializable {
     private String email;
     private LocalDate age;
     @Enumerated(EnumType.STRING)
-    private TrancheAge trancheAge;
+    private TrancheAge trancheAge ;
     @Enumerated(EnumType.STRING)
-    private TypePersonne typePersonne; //moch commun nrml mahich importante dima null bch nkhaleha
+    private TypePersonne typePersonne = TypePersonne.JEUNE_SDF; //moch commun nrml mahich importante dima null bch nkhaleha
     @NotBlank
     @Size(max = 20)
     private String username;

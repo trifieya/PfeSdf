@@ -2,6 +2,7 @@ package tn.sdf.pfesdf.controllers;
 
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.webjars.NotFoundException;
 import tn.sdf.pfesdf.entities.Parrain;
 import tn.sdf.pfesdf.entities.Personne;
 import tn.sdf.pfesdf.entities.Profil;
@@ -16,6 +18,7 @@ import tn.sdf.pfesdf.interfaces.IPersonneService;
 import tn.sdf.pfesdf.repository.PersonneRepository;
 import tn.sdf.pfesdf.services.FTPServiceImp;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -133,6 +136,14 @@ public class PersonneRestController {
 //        personneService.editProfile();
 //        return ResponseEntity.ok("USER modifiées avec succès");
 //    }
+
+    @PutMapping("/editprofile")
+    public void editProfile(@RequestParam("age") @DateTimeFormat(pattern = "yyyy-MM-dd")  LocalDate age) {
+
+            personneService.editprofile(age);
+
+    }
+
 
 
 

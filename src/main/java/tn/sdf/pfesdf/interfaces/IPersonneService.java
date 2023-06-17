@@ -5,6 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 import tn.sdf.pfesdf.entities.Agent;
 import tn.sdf.pfesdf.entities.Personne;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,7 +39,7 @@ public interface IPersonneService {
     public void enregistrerCoordonnees(Long id, Float latitude, Float longitude);
     public Object getCurrentUser();
     public void changeLocation(Float newLongitude, Float newLatitude);
-//    public void editProfile();
-
+    public void calculateAgeAndSetTrancheAge(Personne personne, LocalDate age);
+    public void editprofile(LocalDate age);
 
 }
