@@ -31,8 +31,14 @@ public class RendezVousRestController {
 
     @GetMapping("/retrieve-all-rendezVous")
     //@PreAuthorize("hasRole('ROLE_Profil')")
-    public List<RendezVous> getlistRendezVous() {
+    public List<RendezVous> getlistRendezVousByAgent() {
         List<RendezVous> listrendezVous = rendezVousService.retrieveAllRendezVousbyAgent();
+        return listrendezVous;
+    }
+    @GetMapping("/retrieve-all-rendezVous-For-admin/{idAgent}")
+    //@PreAuthorize("hasRole('ROLE_Profil')")
+    public List<RendezVous> getlistRendezVousByAgenForAdmint(@PathVariable("idAgent") Long idAgent) {
+        List<RendezVous> listrendezVous = rendezVousService.retrieveAllRendezVousbyAgentForAdmin(idAgent);
         return listrendezVous;
     }
     @GetMapping("/retrieve-rendezVous/{idRdv}")

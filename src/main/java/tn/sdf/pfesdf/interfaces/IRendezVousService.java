@@ -20,4 +20,5 @@ public interface IRendezVousService {
 
     public  void removeRendezVous(Long idRdv);
     public boolean checkRendezVousOverlap(RendezVous newRdv);
+    public List<RendezVous> retrieveAllRendezVousbyAgentForAdmin(Long idAgent);
 }

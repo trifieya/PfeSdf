@@ -127,7 +127,7 @@ public class PersonneRestController {
 //    }
 
     @PostMapping("/change-location")
-    public ResponseEntity<String> changeLocation(@RequestParam Float newLongitude, @RequestParam Float newLatitude) {
+    public ResponseEntity<String> changeLocation(@RequestParam Double newLongitude, @RequestParam Double newLatitude) {
         personneService.changeLocation(newLongitude, newLatitude);
         return ResponseEntity.ok("Longitude et latitude modifiées avec succès");
     }
@@ -137,10 +137,17 @@ public class PersonneRestController {
 //        return ResponseEntity.ok("USER modifiées avec succès");
 //    }
 
-    @PutMapping("/editprofile")
-    public void editProfile(@RequestParam("age") @DateTimeFormat(pattern = "yyyy-MM-dd")  LocalDate age) {
+    @PutMapping("/editprofileAgent")
+        public void editprofileForAgent(@RequestParam("age") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate age  ,@RequestParam Long idCentre) {
 
-            personneService.editprofile(age);
+            personneService.editprofileForAgent(age,idCentre);
+
+    }
+
+    @PutMapping("/editprofile")
+    public void editProfile(@RequestParam("age") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate age) {
+
+        personneService.editprofile(age);
 
     }
 

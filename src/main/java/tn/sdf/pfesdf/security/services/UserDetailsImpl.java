@@ -41,9 +41,9 @@ public class UserDetailsImpl implements UserDetails {
     private Integer phnum;
     private Integer cin;
 
-    private Float logitude;
+    private Double logitude;
 
-    private Float latitude;
+    private Double latitude;
     private List<String> roles;
 
     private Collection<? extends GrantedAuthority> authorities; //les éléments de la Collection sont des objets qui étendent l'interface GrantedAuthority. GrantedAuthority est une interface de Spring Security qui représente une autorisation attribuée à un utilisateur. Les implémentations courantes de cette interface sont SimpleGrantedAuthority et Role, qui sont utilisées pour stocker les rôles de l'utilisateur.
@@ -51,7 +51,7 @@ public class UserDetailsImpl implements UserDetails {
 
     public UserDetailsImpl(Long id, String username, String email, String nom, String photo, String prenom,
                            LocalDate age, TrancheAge trancheAge, String password, Gender gender,
-                           Integer phnum, Integer cin, Float logitude, Float latitude,
+                           Integer phnum, Integer cin, Double logitude, Double latitude,
                            Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;

@@ -12,15 +12,17 @@ import java.util.Set;
 @AllArgsConstructor
 @ToString
 @Entity
-public class Ville implements Serializable {
+public class Delegation implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idVille;
-    private String nomVille;
+    private Long id_delegation;
+    private Long code;
+    private String libelle ;
 
     @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "ville")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "delegation")
     private Set<Personne> personnesv;
+
     @ManyToOne
-    Gouvernorat gouvernorat;
+    Gouvernerat gouvernerat;
 }

@@ -18,7 +18,7 @@ public interface IProfilService {
 
     public  void removeProfil(Long idProfil);
     public void assignNearestCentre(Long profilId);
-    public float calculateDistance(float longitude1, float latitude1, float longitude2, float latitude2);
+    public double calculateDistance(double longitude1, double latitude1, double longitude2, double latitude2) ;
     public ResponseEntity<Agent> assignrprofilagentdisponibilité(Long idProfil);
     public void assignrprofilparraindisponibilité(Long idProfil);
     public void assignprofilparrainadequat(Long idProfil);

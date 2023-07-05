@@ -1,10 +1,12 @@
 package tn.sdf.pfesdf.controllers;
 
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
+import javax.print.Doc;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
@@ -82,6 +84,8 @@ public class AuthController {
     AdminServiceImpl adminService;
     @Autowired
     RegistrationCompleteEventListener eventListener;
+    @Autowired
+    DocumentRepository documentRepository;
 
 
 
@@ -160,13 +164,34 @@ public class AuthController {
             Personne personne = new Personne(signUpRequest.getUsername(),
                     signUpRequest.getEmail(),
                     encoder.encode(signUpRequest.getPassword()));
+            personne.setDate_ajout(LocalDate.now());
             Profil profile = new Profil();
             personne.setProfil(profile);
             profile.setProfilpresonne(personne);
+           // Set<Document> documentSet = new HashSet<>();
+            //
+
+            //
+
+
+
             Role personneRole = roleRepository.findByName(ERole.ROLE_PERSONNE)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             personne.setRoles(Collections.singleton(personneRole));
             personneRepository.save(personne);
+            Document document1 = new Document();
+            Document document2= new Document();
+            document1.setTypedocument(TypeDocument.B3);
+            document2.setTypedocument(TypeDocument.ANTECEDENT_PSYCHIATRIQUE);
+            //profile.setDocuments(documentSet);
+            Set<Profil> profileSet = new HashSet<>();
+            profileSet.add(profile);
+            document1.setProfildoc(profileSet);
+            document2.setProfildoc(profileSet);
+
+            documentRepository.save(document1);
+            documentRepository.save(document2);
+
         } else if (signUpRequest.getRole().contains("ROLE_AGENT")) {
             Agent agent = new Agent(signUpRequest.getUsername(),
                     signUpRequest.getEmail(),

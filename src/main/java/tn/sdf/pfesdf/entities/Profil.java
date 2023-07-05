@@ -6,6 +6,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 @Getter
 @Setter
@@ -30,8 +31,9 @@ public class Profil implements Serializable {
     private Set<RendezVous>rendezVousSet;
     @OneToOne
     Personne profilpresonne;
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "profildoc")
-    private Set<Document>documents;
+
+    @ManyToMany (cascade = CascadeType.ALL,mappedBy = "profildoc")
+    private Set<Document>documents =new HashSet<>();
 
 
 

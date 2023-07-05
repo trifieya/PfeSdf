@@ -4,6 +4,8 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,10 +17,13 @@ public class Alerte implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idAlerte;
     private String alerteur;
+    private Integer tel;
     private String description;
-    private Float logitude;
-    private Float latitude;
-    @ManyToOne
-    Agent agental;
+    private double logitude;
+    private double latitude;
+    private Boolean traite;
+    private LocalDate datealerte;
+    //@ManyToOne
+    //Agent agental;
 
 }

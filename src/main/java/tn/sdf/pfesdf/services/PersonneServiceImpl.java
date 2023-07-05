@@ -17,14 +17,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.webjars.NotFoundException;
-import tn.sdf.pfesdf.entities.Agent;
-import tn.sdf.pfesdf.entities.Parrain;
-import tn.sdf.pfesdf.entities.Personne;
-import tn.sdf.pfesdf.entities.TrancheAge;
+import tn.sdf.pfesdf.entities.*;
 import tn.sdf.pfesdf.interfaces.IAgentService;
 import tn.sdf.pfesdf.interfaces.IParrainService;
 import tn.sdf.pfesdf.interfaces.IPersonneService;
 import tn.sdf.pfesdf.repository.AgentRepository;
+import tn.sdf.pfesdf.repository.CentreRepository;
 import tn.sdf.pfesdf.repository.ParrainRepository;
 import tn.sdf.pfesdf.repository.PersonneRepository;
 import tn.sdf.pfesdf.security.services.UserDetailsImpl;
@@ -51,6 +49,8 @@ public class PersonneServiceImpl implements IPersonneService {
     IAgentService agentService;
     @Autowired
     PasswordResetTokenService passwordResetTokenService;
+    @Autowired
+    CentreRepository centreRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -138,7 +138,7 @@ public class PersonneServiceImpl implements IPersonneService {
     }
 
     @Override
-    public void enregistrerCoordonnees(Long id, Float latitude, Float longitude) {
+    public void enregistrerCoordonnees(Long id, Double latitude, Double longitude) {
 
     }
 
@@ -204,7 +204,7 @@ public class PersonneServiceImpl implements IPersonneService {
 
 
     @Override
-    public void changeLocation(Float newLongitude, Float newLatitude) {
+    public void changeLocation(Double newLongitude, Double newLatitude) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
@@ -251,24 +251,7 @@ public class PersonneServiceImpl implements IPersonneService {
         String username = authentication.getName();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 
-        if (authorities.contains(new SimpleGrantedAuthority("ROLE_AGENT"))) {
-            Optional<Agent> agentOptional = agentRepository.findByUsername(username);
-            if (agentOptional.isPresent()) {
-                Agent agent = agentOptional.get();
-                if(agent.getAge()==null) {
-                    // Update agent properties here
-
-                    // Calculate age and set trancheAge
-                    agent.setAge(age);
-                    agent.setCin(agent.getCin());
-                    agentService.calculateAgeAndSetTrancheAge(agent, age);
-
-                    agentRepository.save(agent);
-                }
-            } else {
-                throw new NotFoundException("Agent non trouvé");
-            }
-        } else if (authorities.contains(new SimpleGrantedAuthority("ROLE_PARRAIN"))) {
+        if (authorities.contains(new SimpleGrantedAuthority("ROLE_PARRAIN"))) {
             Optional<Parrain> parrainOptional = parrainRepository.findByUsername(username);
             if (parrainOptional.isPresent()) {
                 Parrain parrain = parrainOptional.get();
@@ -276,7 +259,7 @@ public class PersonneServiceImpl implements IPersonneService {
                 parrain.setAge(age);
 
                 // Calculate age and set trancheAge
-                parrainService.calculateAgeAndSetTrancheAge(parrain,age);
+                //parrainService.calculateAgeAndSetTrancheAge(parrain,age);
 
                 parrainRepository.save(parrain);
             } else {
@@ -295,6 +278,33 @@ public class PersonneServiceImpl implements IPersonneService {
                 personneRepository.save(personne);
             } else {
                 throw new NotFoundException("Personne non trouvée");
+            }
+        }
+    }
+
+    @Override
+    public void editprofileForAgent(LocalDate age, Long idCentre) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        Centre centre = centreRepository.findById(idCentre).orElse(null);
+
+        if (authorities.contains(new SimpleGrantedAuthority("ROLE_AGENT"))) {
+            Optional<Agent> agentOptional = agentRepository.findByUsername(username);
+            if (agentOptional.isPresent()) {
+                Agent agent = agentOptional.get();
+
+                // Update agent properties here
+
+                // Calculate age and set trancheAge
+                agent.setAge(age);
+                agent.setIdCentre(centre.getIdCentre());
+                agentService.calculateAgeAndSetTrancheAge(agent, age);
+
+                agentRepository.save(agent);
+
+            } else {
+                throw new NotFoundException("Agent non trouvé");
             }
         }
     }
@@ -317,7 +327,7 @@ public class PersonneServiceImpl implements IPersonneService {
         } else if (calculatedAge >= 36 && calculatedAge <= 40) {
             personne.setTrancheAge(TrancheAge.TRENTE_CINQ_QUARNTE);
         } else {
-            // Handle the case when the age doesn't fit into any predefined range
+            personne.setTrancheAge(TrancheAge.PLUS_DE_QUARNTE);
         }
 
         // Save the personne entity

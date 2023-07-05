@@ -13,8 +13,12 @@ import tn.sdf.pfesdf.interfaces.IProfilService;
 import tn.sdf.pfesdf.repository.*;
 import tn.sdf.pfesdf.security.services.UserDetailsImpl;
 
+import java.time.LocalDate;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 @Slf4j
 @Service
 public class ProfilServiceImpl  implements IProfilService {
@@ -28,6 +32,8 @@ public class ProfilServiceImpl  implements IProfilService {
     AgentRepository agentRepository;
     @Autowired
     ParrainRepository parrainRepository;
+    @Autowired
+    DocumentRepository documentRepository;
 
     @Override
     public List<Profil> retrieveAllProfils() {
@@ -50,11 +56,19 @@ public class ProfilServiceImpl  implements IProfilService {
 
 
 
+
     @Override
     public Profil updateProfil(Profil pro) {
-
-        return profilRepository.save(pro);
+        Set<Profil> profilSet = new HashSet<>();
+        profilSet.add(pro);
+        for (Document document : pro.getDocuments()) {
+            document.setProfildoc(profilSet);
+        }
+        profilRepository.save(pro);
+        return pro;
     }
+
+
 
     @Override
     public Profil addProfil(Profil pro) {
@@ -81,10 +95,10 @@ public class ProfilServiceImpl  implements IProfilService {
         List<Centre> centres = centreRepository.findAll();
 
         Centre nearestCentre = null;
-        Float minDistance = Float.MAX_VALUE;
+        Double minDistance = Double.MAX_VALUE;
 
         for (Centre centre : centres) {
-            Float distance = calculateDistance(personne.getLogitude(), personne.getLatitude(), centre.getLongitude(), centre.getLatitude());
+            Double distance = calculateDistance(personne.getLogitude(), personne.getLatitude(), centre.getLongitude(), centre.getLatitude());
             if (distance < minDistance) {
                 minDistance = distance;
                 nearestCentre = centre;
@@ -94,28 +108,29 @@ public class ProfilServiceImpl  implements IProfilService {
         personne.setCentre(nearestCentre);
         personneRepository.save(personne);
     }
-    public float calculateDistance(float longitude1, float latitude1, float longitude2, float latitude2) {
-        float earthRadius = 6371f; // Radius of the Earth in kilometers
+    public double calculateDistance(double longitude1, double latitude1, double longitude2, double latitude2) {
+        double earthRadius = 6371.0; // Radius of the Earth in kilometers
 
         // Convert latitude and longitude to radians
-        float lat1Rad = (float) Math.toRadians(latitude1);
-        float lon1Rad = (float) Math.toRadians(longitude1);
-        float lat2Rad = (float) Math.toRadians(latitude2);
-        float lon2Rad = (float) Math.toRadians(longitude2);
+        double lat1Rad = Math.toRadians(latitude1);
+        double lon1Rad = Math.toRadians(longitude1);
+        double lat2Rad = Math.toRadians(latitude2);
+        double lon2Rad = Math.toRadians(longitude2);
 
         // Calculate the differences
-        float latDiff = lat2Rad - lat1Rad;
-        float lonDiff = lon2Rad - lon1Rad;
+        double latDiff = lat2Rad - lat1Rad;
+        double lonDiff = lon2Rad - lon1Rad;
 
         // Calculate the Haversine distance
-        float a = (float) (Math.sin(latDiff / 2) * Math.sin(latDiff / 2) +
+        double a = Math.sin(latDiff / 2) * Math.sin(latDiff / 2) +
                 Math.cos(lat1Rad) * Math.cos(lat2Rad) *
-                        Math.sin(lonDiff / 2) * Math.sin(lonDiff / 2));
-        float c = 2 * (float) Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        float distance = earthRadius * c;
+                        Math.sin(lonDiff / 2) * Math.sin(lonDiff / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distance = earthRadius * c;
 
         return distance;
     }
+
     //affecter à un agent selon disponibilité
     public ResponseEntity<Agent> assignrprofilagentdisponibilité(Long idProfil){
             Profil profil = profilRepository.findById(idProfil).orElse(null);
@@ -168,6 +183,7 @@ public class ProfilServiceImpl  implements IProfilService {
             }
             personne.setParrain(parrainDisponible);
             parrainDisponible.setNbencours(parrainDisponible.getNbencours()+1);
+            personne.setDate_affect_parrain(LocalDate.now());
             personneRepository.save(personne);
         }
         else{
@@ -197,7 +213,7 @@ public class ProfilServiceImpl  implements IProfilService {
             }
             personne.setParrain(parrainadequatetdisponible);
             parrainadequatetdisponible.setNbencours(parrainadequatetdisponible.getNbencours()+1);
-
+            personne.setDate_affect_parrain(LocalDate.now());
             personneRepository.save(personne);
         } else {
             log.info("aucun parrain n'est adéquat pour le moment");
@@ -242,10 +258,10 @@ public class ProfilServiceImpl  implements IProfilService {
         List<Parrain> parrains = parrainRepository.findAll();
 
 
-        Float minDistance = Float.MAX_VALUE;
+        Double minDistance = Double.MAX_VALUE;
 
         for (Parrain parrain : parrains) {
-            Float distance = calculateDistance(personne.getLogitude(), personne.getLatitude(), parrain.getLogitude(), parrain.getLatitude());
+            Double distance = calculateDistance(personne.getLogitude(), personne.getLatitude(), parrain.getLogitude(), parrain.getLatitude());
             if (distance < minDistance && parrain.getNbencours() < parrain.getNbmax() && parrain.getNbencours() < plusPetitNbEncours) {
                 minDistance = distance;
                 parrainprocheetdisponible = parrain;
@@ -259,7 +275,9 @@ public class ProfilServiceImpl  implements IProfilService {
 
         personne.setParrain(parrainprocheetdisponible);
             parrainprocheetdisponible.setNbencours(parrainprocheetdisponible.getNbencours()+1);
-        personneRepository.save(personne);
+            personne.setDate_affect_parrain(LocalDate.now());
+
+            personneRepository.save(personne);
         } else {
             log.info("aucun parrain n'est proche pour le moment");
         }
@@ -277,10 +295,10 @@ public class ProfilServiceImpl  implements IProfilService {
         Agent agentPrecedent = personne.getAgent();
         int plusPetitNbEncours= Integer.MAX_VALUE;
 
-        Float minDistance = Float.MAX_VALUE;
+        Double minDistance = Double.MAX_VALUE;
 
         for (Agent agent : agents) {
-            Float distance = calculateDistance(personne.getLogitude(), personne.getLatitude(), agent.getLogitude(), agent.getLatitude());
+            Double distance = calculateDistance(personne.getLogitude(), personne.getLatitude(), agent.getLogitude(), agent.getLatitude());
             if (distance < minDistance && agent.getNbencours() < agent.getNbmax() && agent.getNbencours() < plusPetitNbEncours ) {
                 minDistance = distance;
                 agentDisponibleetproche = agent;

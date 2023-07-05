@@ -17,7 +17,7 @@ public class AgentRestController {
 
     @GetMapping("/retrieve-all-agents")
    // @PreAuthorize("hasRole('ROLE_AGENT')")
-    @PreAuthorize("hasRole('ROLE_AGENT')")
+    //@PreAuthorize("hasRole('ROLE_AGENT')")
     public List<Agent> getAgents() {
         List<Agent> listAgents = agentService.retrieveAllAgents();
         return listAgents;

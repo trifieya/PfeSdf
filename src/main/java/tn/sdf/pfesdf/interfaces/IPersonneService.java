@@ -36,10 +36,12 @@ public interface IPersonneService {
 
     public String getPhotoUrl(Long idPersonne);
 
-    public void enregistrerCoordonnees(Long id, Float latitude, Float longitude);
+    public void enregistrerCoordonnees(Long id, Double latitude, Double longitude);
     public Object getCurrentUser();
-    public void changeLocation(Float newLongitude, Float newLatitude);
+    public void changeLocation(Double newLongitude, Double newLatitude);
     public void calculateAgeAndSetTrancheAge(Personne personne, LocalDate age);
     public void editprofile(LocalDate age);
+    public void editprofileForAgent(LocalDate age, Long idCentre);
 
-}
+
+    }

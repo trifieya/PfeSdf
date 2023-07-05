@@ -51,8 +51,8 @@ public class Parrain implements Serializable {
     @Enumerated(EnumType.STRING)
     private Discipline discipline;
     //private String role;
-    private Float logitude;
-    private Float latitude;
+    private double logitude;
+    private double latitude;
     @Column(name = "resettoken")
     private String resettoken;
     @JsonIgnore

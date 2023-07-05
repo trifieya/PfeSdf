@@ -29,9 +29,9 @@ public class Centre implements Serializable {
     @JsonIgnore
     private Set<Personne> personnesc;
     @ManyToOne(cascade = CascadeType.ALL)
-    Ville villec;
-    @ManyToOne(cascade = CascadeType.ALL)
-    Admin adminc;
+    Delegation delegation;
+    //@ManyToOne(cascade = CascadeType.ALL)
+   // Admin adminc;
 
 
 

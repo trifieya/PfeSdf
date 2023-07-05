@@ -52,4 +52,5 @@ public class CentreRestController {
                                        @RequestParam Float longitude) {
         centreService.enregistrerCoordonnees(idCentre, latitude, longitude);
     }
+
 }

@@ -41,9 +41,9 @@ public class Admin implements Serializable {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "adminc")
-    private Set<Centre>centres;
+   // @JsonIgnore
+   // @OneToMany(cascade = CascadeType.ALL,mappedBy = "adminc")
+    //private Set<Centre>centres;
 
     public  Admin(String username, String email, String password) {
         this.username = username;

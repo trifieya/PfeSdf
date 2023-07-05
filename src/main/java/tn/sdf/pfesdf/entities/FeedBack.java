@@ -15,11 +15,16 @@ public class FeedBack implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idFeedback;
-    private LocalDate dateFeed;
-    private String contenuFeed;
-    private Integer note;
-    private TypeFeedback typeFeedback;
-    private Long idCentre;
+    private LocalDate dateajoutFeed;
+    @Enumerated(EnumType.STRING)
+    private TypeFeedback feedcentre;
+    @Enumerated(EnumType.STRING)
+    private TypeFeedback feedactivite;
+    @Enumerated(EnumType.STRING)
+    private TypeFeedback feedglobal;
+    //private Integer note;
+    //private TypeFeedback typeFeedback;
+    //private Long idCentre;
     private Long idAgent;
     private Long idParrain;
     @ManyToOne

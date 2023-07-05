@@ -1,9 +1,6 @@
 package tn.sdf.pfesdf.entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -53,8 +50,10 @@ public class Personne implements Serializable {
     private Integer phnum;
     private Integer cin; //bch tetzed mbaad w tetnaha ml profil
     //private String role;
-    private Float logitude;
-    private Float latitude;
+    private double logitude;
+    private double latitude;
+    private LocalDate date_ajout;
+    private LocalDate date_affect_parrain;
 
    @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
@@ -67,7 +66,7 @@ public class Personne implements Serializable {
     Centre centre;
 
     @ManyToOne
-    Ville ville;
+    Delegation delegation;
     @ManyToMany(cascade = CascadeType.ALL)
     private Set<Programme> programmes;
     @ManyToOne

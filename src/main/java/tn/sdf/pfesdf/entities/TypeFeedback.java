@@ -1,7 +1,10 @@
 package tn.sdf.pfesdf.entities;
 
 public enum TypeFeedback {
-    POSITIF,
-    NEGATIF,
-    SUGGESTION
+    TURBULENT,
+    ANTI_SOCIAL,
+    INAPPROPRIE,
+    ACCEPTABLE,
+    TRES_BIEN,
+    PARFAIT
 }

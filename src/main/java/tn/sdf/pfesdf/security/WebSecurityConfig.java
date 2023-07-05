@@ -69,7 +69,7 @@ public class WebSecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/api/auth/**").permitAll() //indique que toutes les requêtes sur les URL commençant par /api/auth/ sont autorisées sans aucune restriction d'authentification.
                .antMatchers("/swagger-ui/**").permitAll() // indique que toutes les requêtes sur les URL commençant par /api/test/ sont également autorisées sans restriction.
-             //   .antMatchers("/**").permitAll()
+               .antMatchers("/api/alerte/**").permitAll()
                 //.antMatchers("/parrain/**").permitAll()
                 //.antMatchers("/personne/**").permitAll()
                 //.antMatchers("http://192.168.162.222:4200/**").permitAll()

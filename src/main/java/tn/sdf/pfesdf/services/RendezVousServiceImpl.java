@@ -61,6 +61,24 @@ public class RendezVousServiceImpl implements IRendezVousService {
         return Collections.emptyList(); // Retourner une liste vide si l'utilisateur n'a pas le rôle d'agent
     }
 
+    @Override
+    public List<RendezVous> retrieveAllRendezVousbyAgentForAdmin(Long idAgent) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long agentId = ((UserDetailsImpl) authentication.getPrincipal()).getId();
+
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+
+        if (authorities.contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+
+            return rendezVousRepository.findByAgent_IdAgent(idAgent);
+        }
+        return Collections.emptyList();
+
+
+    }
+
+
+
 
     @Override
     public RendezVous updateRendezVous(Long idrdv, RendezVous rdv) {
@@ -84,6 +102,8 @@ public class RendezVousServiceImpl implements IRendezVousService {
         // Vérifier s'il y a des rendez-vous qui se chevauchent
         return !overlappingRdvs.isEmpty();
     }
+
+
 
 
     @Override

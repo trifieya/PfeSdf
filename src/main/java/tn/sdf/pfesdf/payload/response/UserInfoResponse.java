@@ -2,11 +2,6 @@ package tn.sdf.pfesdf.payload.response;
 import tn.sdf.pfesdf.entities.Gender;
 import tn.sdf.pfesdf.entities.TrancheAge;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
 public class UserInfoResponse {
@@ -31,11 +26,11 @@ public class UserInfoResponse {
     private Integer phnum;
     private Integer cin;
 
-    private Float logitude;
+    private Double logitude;
 
-    private Float latitude;
+    private Double latitude;
 
-    public UserInfoResponse(Long id, String username, String email, String nom, String photo, String prenom, LocalDate age, TrancheAge trancheAge, String password, Gender gender, Integer phnum, Integer cin, Float logitude, Float latitude, List<String> roles) {
+    public UserInfoResponse(Long id, String username, String email, String nom, String photo, String prenom, LocalDate age, TrancheAge trancheAge, String password, Gender gender, Integer phnum, Integer cin, Double logitude, Double latitude, List<String> roles) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -158,19 +153,19 @@ public class UserInfoResponse {
         this.cin = cin;
     }
 
-    public Float getLogitude() {
+    public Double getLogitude() {
         return logitude;
     }
 
-    public void setLogitude(Float logitude) {
+    public void setLogitude(Double logitude) {
         this.logitude = logitude;
     }
 
-    public Float getLatitude() {
+    public Double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(Float latitude) {
+    public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
 }

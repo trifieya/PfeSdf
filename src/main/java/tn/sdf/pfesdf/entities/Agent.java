@@ -30,6 +30,8 @@ public class Agent implements Serializable {
     private String Photo;
     private String nom;
     private String prenom;
+    private Long idCentre;
+
     @Size(max = 50)
     @Email
     private String email;
@@ -51,17 +53,17 @@ public class Agent implements Serializable {
     private Integer nbmax=5;
     private Integer nbencours=0;
     //private String role;
-    private Float logitude;
-    private Float latitude;
+    private double logitude;
+    private double latitude;
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "agent")
     private Set<RendezVous>rendezVousag;
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "agent")
     private Set<Personne>personnesparrain;
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "agental")
-    private Set<Alerte>alertes;
+   // @JsonIgnore
+    //@OneToMany(cascade = CascadeType.ALL,mappedBy = "agental")
+    //private Set<Alerte>alertes;
     @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinTable(name = "agent_roles",
