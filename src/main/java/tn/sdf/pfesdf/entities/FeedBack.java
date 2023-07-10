@@ -1,5 +1,7 @@
 package tn.sdf.pfesdf.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -22,13 +24,16 @@ public class FeedBack implements Serializable {
     private TypeFeedback feedactivite;
     @Enumerated(EnumType.STRING)
     private TypeFeedback feedglobal;
+    private String description;
+    private Long idAgent;
+    private Long idParrain;
+    @JsonBackReference
+    @ManyToOne
+    Profil profilf;
+
     //private Integer note;
     //private TypeFeedback typeFeedback;
     //private Long idCentre;
-    private Long idAgent;
-    private Long idParrain;
-    @ManyToOne
-    Personne personnef;
 
 
 

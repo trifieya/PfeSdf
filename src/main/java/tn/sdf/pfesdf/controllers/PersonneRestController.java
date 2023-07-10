@@ -11,9 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.webjars.NotFoundException;
-import tn.sdf.pfesdf.entities.Parrain;
-import tn.sdf.pfesdf.entities.Personne;
-import tn.sdf.pfesdf.entities.Profil;
+import tn.sdf.pfesdf.entities.*;
 import tn.sdf.pfesdf.interfaces.IPersonneService;
 import tn.sdf.pfesdf.repository.PersonneRepository;
 import tn.sdf.pfesdf.services.FTPServiceImp;
@@ -41,9 +39,9 @@ public class PersonneRestController {
         List<Personne> listPersonne = personneService.retrieveAllPersonnes();
         return listPersonne;
     }
-    @GetMapping("/retrieve-personne/{idPersonne}")
-    public Personne retrievePersonne(@PathVariable("idPersonne") Long idPersonne) {
-        return personneService.retrievePersonne(idPersonne);
+    @GetMapping("/retrieve-personne")
+    public Object retrievePersonne() {
+        return personneService.retrievePersonne();
     }
 
 
@@ -51,6 +49,15 @@ public class PersonneRestController {
     public Personne addPersonne(@RequestBody Personne per) {
         Personne personne = personneService.addPersonne(per);
         return personne;
+    }
+    @GetMapping("/get-coordinates")
+    public ResponseEntity<Double[]> getUserCoordinates() {
+        try {
+            Double[] coordinates = personneService.getUserCoordinates();
+            return ResponseEntity.ok(coordinates);
+        } catch (NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 
@@ -137,19 +144,38 @@ public class PersonneRestController {
 //        return ResponseEntity.ok("USER modifiées avec succès");
 //    }
 
+
     @PutMapping("/editprofileAgent")
-        public void editprofileForAgent(@RequestParam("age") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate age  ,@RequestParam Long idCentre) {
+    public void editprofileForAgent(@RequestParam("age") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate age,
+                            @RequestParam("username") String username,
+                            @RequestParam("email") String email,
+                            @RequestParam("nom") String nom,
+                            @RequestParam("prenom") String prenom,
+                            @RequestParam("delegation") String delegationId,
+                            @RequestParam("cin") Integer cin,
+                            @RequestParam("discipline") Discipline discipline,
+                            @RequestParam("phnum") Integer phnum,
+                            @RequestParam("gender") Gender gender,
+                            @RequestParam ("idCentre")Long idCentre){
 
-            personneService.editprofileForAgent(age,idCentre);
-
+        personneService.editprofileForAgent(username, email, nom, prenom, age, delegationId, cin, discipline, phnum, gender,idCentre);
     }
 
     @PutMapping("/editprofile")
-    public void editProfile(@RequestParam("age") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate age) {
+    public void editProfile(@RequestParam("age") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate age,
+                            @RequestParam("username") String username,
+                            @RequestParam("email") String email,
+                            @RequestParam("nom") String nom,
+                            @RequestParam("prenom") String prenom,
+                            @RequestParam("delegation") String delegationId,
+                            @RequestParam("cin") Integer cin,
+                            @RequestParam("discipline") Discipline discipline,
+                            @RequestParam("phnum") Integer phnum,
+                            @RequestParam("gender") Gender gender) {
 
-        personneService.editprofile(age);
-
+        personneService.editprofile(username, email, nom, prenom, age, delegationId, cin, discipline, phnum, gender);
     }
+
 
 
 

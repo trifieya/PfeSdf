@@ -22,6 +22,12 @@ public class Delegation implements Serializable {
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "delegation")
     private Set<Personne> personnesv;
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "delegation")
+    private Set<Agent> agentsv;
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "delegation")
+    private Set<Parrain> parrainsv;
 
     @ManyToOne
     Gouvernerat gouvernerat;

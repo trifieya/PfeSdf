@@ -8,7 +8,7 @@ import java.util.List;
 public interface IProfilService {
 
     public List<Profil> retrieveAllProfils();
-    public List<Profil> retrieveProfilsByAgent();
+    public List<Profil> retrieveProfilsByAgentOrParrain();
 
     public Profil updateProfil (Profil  pro );
 
@@ -25,6 +25,9 @@ public interface IProfilService {
     public void assignprofilagentadequat(Long idProfil);
     public void assignprofilparrainproche(Long idProfil);
     public void assignprofilagentproche(Long idProfil);
+    public int calculateScore(Long profilId) ;
+    public void affecterProgrammeSelonScore(Long personneId);
+
 
 
     }

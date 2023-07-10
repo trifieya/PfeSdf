@@ -8,16 +8,14 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.webjars.NotFoundException;
 import tn.sdf.pfesdf.entities.*;
 import tn.sdf.pfesdf.interfaces.IProfilService;
 import tn.sdf.pfesdf.repository.*;
 import tn.sdf.pfesdf.security.services.UserDetailsImpl;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -34,6 +32,8 @@ public class ProfilServiceImpl  implements IProfilService {
     ParrainRepository parrainRepository;
     @Autowired
     DocumentRepository documentRepository;
+    @Autowired
+    private ProgrammeRepository programmeRepository;
 
     @Override
     public List<Profil> retrieveAllProfils() {
@@ -42,15 +42,23 @@ public class ProfilServiceImpl  implements IProfilService {
     }
 
     @Override
-    public List<Profil> retrieveProfilsByAgent() {
+    public List<Profil> retrieveProfilsByAgentOrParrain() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long agentId = ((UserDetailsImpl) authentication.getPrincipal()).getId();
-        Agent connectedAgent = agentRepository.findById(agentId).orElse(null);//car f save je dois passer un agent c pour ça 3ayatet lel agent li ando agentid li connecté
+        Long connecteduser = ((UserDetailsImpl) authentication.getPrincipal()).getId();
+        Agent connectedAgent = agentRepository.findById(connecteduser).orElse(null);//car f save je dois passer un agent c pour ça 3ayatet lel agent li ando agentid li connecté
+        Parrain connectedParrain = parrainRepository.findById(connecteduser).orElse(null);//car f save je dois passer un agent c pour ça 3ayatet lel agent li ando agentid li connecté
+
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();//authorities heya li feha les roles et les permissions
-        if (connectedAgent == null || !authorities.contains(new SimpleGrantedAuthority("ROLE_AGENT"))) {
-            throw new RuntimeException("Error retrieving profiles by agent!");
+        if (authorities.contains(new SimpleGrantedAuthority("ROLE_AGENT"))) {
+            return profilRepository.findByProfilpresonneAgent(connectedAgent);
         }
-        return profilRepository.findByProfilpresonneAgent(connectedAgent);
+        if (authorities.contains(new SimpleGrantedAuthority("ROLE_PARRAIN"))) {
+            return profilRepository.findByProfilpresonneParrain(connectedParrain);
+        }
+        else{
+            throw new RuntimeException("L'utilisateur connecté n'a pas le rôle d'agent ou parrain !");
+        }
+
     }
 
 
@@ -321,6 +329,148 @@ public class ProfilServiceImpl  implements IProfilService {
         }
 
     }
+
+
+
+
+
+
+         @Override
+        public int calculateScore(Long profilId) {
+            Profil profil = profilRepository.findById(profilId)
+                    .orElseThrow(() -> new RuntimeException("Profil non trouvé avec l'ID : " + profilId));
+             int maxScore = 20;
+             int score = 0;
+             Set<FeedBack> feedbacks = profil.getFeedBacks();
+             boolean hasFeedback = !feedbacks.isEmpty();
+
+
+             // Vérification de la discipline
+             if (hasFeedback) {
+                 Discipline discipline = profil.getProfilpresonne().getDiscipline();
+                 if (discipline == Discipline.SOUPLE) {
+                     score += 7;
+                 } else if (discipline == Discipline.ORDINAIRE) {
+                     score += 4;
+                 } else if (discipline == Discipline.COMPLIQUEE) {
+                     score += 1;
+                 }
+
+                 // Vérification des feedbacks d'activité
+                 Set<FeedBack> feedbackss = profil.getFeedBacks();
+                 int agentFeedbackCount = 0;
+                 int parrainFeedbackCount = 0;
+
+                 for (FeedBack feedback : feedbackss) {
+                     LocalDate feedbackDate = feedback.getDateajoutFeed();
+                     if (feedbackDate.getYear() == LocalDate.now().getYear()) {
+                         if (feedback.getIdAgent() != null) {
+                             agentFeedbackCount++;
+                             score += getFeedbackScore(feedback.getFeedactivite());
+                         }
+                         if (feedback.getIdParrain() != null) {
+                             parrainFeedbackCount++;
+                             score += getFeedbackScore(feedback.getFeedactivite());
+                         }
+                     }
+                 }
+
+                 // Vérification des documents
+                 Set<Document> documents = profil.getDocuments();
+                 for (Document document : documents) {
+                     if (document.getTypedocument() == TypeDocument.B3 && document.getValeur()) {
+                         score += 3;
+                     }
+                     if (document.getTypedocument() == TypeDocument.ANTECEDENT_PSYCHIATRIQUE && !document.getValeur()) {
+                         score += 2;
+                     }
+                 }
+             }
+             else if (!hasFeedback) {
+                 Discipline discipline = profil.getProfilpresonne().getDiscipline();
+                 if (discipline == Discipline.SOUPLE) {
+                     score += 9;
+                 } else if (discipline == Discipline.ORDINAIRE) {
+                     score += 6;
+                 } else if (discipline == Discipline.COMPLIQUEE) {
+                     score += 3;
+                 }
+
+
+                 // Vérification des documents
+                 Set<Document> documents = profil.getDocuments();
+                 for (Document document : documents) {
+                     if (document.getTypedocument() == TypeDocument.B3 && document.getValeur()) {
+                         score += 6;
+                     }
+                     if (document.getTypedocument() == TypeDocument.ANTECEDENT_PSYCHIATRIQUE && !document.getValeur()) {
+                         score += 5;
+                     }
+                 }
+             }
+
+
+              profil.setScore(score);
+             if(score<15){
+                 profil.setClassification(Classification.NOT_READY);
+             }else {
+                 profil.setClassification(Classification.READY);
+             }
+profilRepository.save(profil);
+             return score;
+         }
+
+    private int getFeedbackScore(TypeFeedback feedback) {
+        switch (feedback) {
+            case TURBULENT:
+                return 1;
+            case ANTI_SOCIAL:
+                return 2;
+            case ACCEPTABLE:
+                return 3;
+            case PARFAIT:
+                return 4;
+            default:
+                return 0;
+        }
+    }
+
+
+
+
+        @Override
+        public void affecterProgrammeSelonScore(Long personneId) {
+            Personne personne = personneRepository.findById(personneId)
+                    .orElseThrow(() -> new NotFoundException("Personne non trouvée"));
+
+           Profil profil = personne.getProfil();
+           if(profil.getScore()>15){
+               Set<Programme> programmes = new HashSet<>();
+
+               List<Programme> programmesJournaliers = programmeRepository.findByFrequence(Frequence.JOURNALIERE);
+               List<Programme> programmesHebdomadaires = programmeRepository.findByFrequence(Frequence.HEBDOMADAIRE);
+               List<Programme> programmesMensuels = programmeRepository.findByFrequence(Frequence.MENSUEL);
+
+               if (!programmesJournaliers.isEmpty()) {
+                   Collections.shuffle(programmesJournaliers);
+                   programmes.add(programmesJournaliers.get(0));
+               }
+               if (!programmesHebdomadaires.isEmpty()) {
+                   Collections.shuffle(programmesHebdomadaires);
+                   programmes.add(programmesHebdomadaires.get(0));
+               }
+               if (!programmesMensuels.isEmpty()) {
+                   Collections.shuffle(programmesMensuels);//nkhalwedh liste des prog bch mbaad nakhtar awal wehed get(0) d'une façon random
+                   programmes.add(programmesMensuels.get(0));
+               }
+
+               personne.setProgrammes(programmes);
+           }else {
+               personne.setProgrammes(Collections.emptySet());
+           }
+
+            personneRepository.save(personne);
+        }
 
 
 

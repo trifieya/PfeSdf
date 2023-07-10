@@ -25,10 +25,17 @@ public class Profil implements Serializable {
     private LocalDate dateInscriPlatform;
     @Enumerated(EnumType.STRING)
     private Situation situation;
+    private int score;
+    @Enumerated(EnumType.STRING)
+    private Classification classification;
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "profilrdv")
     //@JsonManagedReference
     private Set<RendezVous>rendezVousSet;
+    @JsonManagedReference //L'annotation @JsonManagedReference est utilisée pour la classe parente (Profil), tandis que l'annotation @JsonBackReference est utilisée pour la classe enfant (FeedBack), ce qui permet d'éviter la sérialisation en boucle lors de la conversion en JSON.
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "profilf")
+    //@JsonManagedReference
+    private Set<FeedBack>feedBacks;
     @OneToOne
     Personne profilpresonne;
 

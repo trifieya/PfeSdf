@@ -21,10 +21,7 @@ import tn.sdf.pfesdf.entities.*;
 import tn.sdf.pfesdf.interfaces.IAgentService;
 import tn.sdf.pfesdf.interfaces.IParrainService;
 import tn.sdf.pfesdf.interfaces.IPersonneService;
-import tn.sdf.pfesdf.repository.AgentRepository;
-import tn.sdf.pfesdf.repository.CentreRepository;
-import tn.sdf.pfesdf.repository.ParrainRepository;
-import tn.sdf.pfesdf.repository.PersonneRepository;
+import tn.sdf.pfesdf.repository.*;
 import tn.sdf.pfesdf.security.services.UserDetailsImpl;
 
 import java.time.LocalDate;
@@ -51,6 +48,8 @@ public class PersonneServiceImpl implements IPersonneService {
     PasswordResetTokenService passwordResetTokenService;
     @Autowired
     CentreRepository centreRepository;
+    @Autowired
+    DelegationRepository delegationRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -74,10 +73,10 @@ public class PersonneServiceImpl implements IPersonneService {
     }
 
 
-    @Override
-    public Personne retrievePersonne(Long idPersonne) {
-        return personneRepository.findById(idPersonne).orElse(null);
-    }
+//    @Override
+//    public Personne retrievePersonne(Long idPersonne) {
+//        return personneRepository.findById(idPersonne).orElse(null);
+//    }
 
     @Override
     public void removePersonne(Long idPersonne) {
@@ -244,19 +243,106 @@ public class PersonneServiceImpl implements IPersonneService {
             }
         }
     }
-
     @Override
-    public void editprofile(LocalDate age) {
+    public Double[] getUserCoordinates() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 
-        if (authorities.contains(new SimpleGrantedAuthority("ROLE_PARRAIN"))) {
+        if (authorities.contains(new SimpleGrantedAuthority("ROLE_AGENT"))) {
+            Optional<Agent> agentOptional = agentRepository.findByUsername(username);
+            if (agentOptional.isPresent()) {
+                Agent agent = agentOptional.get();
+                Double longitude = agent.getLogitude();
+                Double latitude = agent.getLatitude();
+                return new Double[] { longitude, latitude };
+            } else {
+                throw new NotFoundException("Agent non trouvé");
+                // Gérer le cas où l'agent n'est pas trouvé
+            }
+        } else if (authorities.contains(new SimpleGrantedAuthority("ROLE_PARRAIN"))) {
             Optional<Parrain> parrainOptional = parrainRepository.findByUsername(username);
             if (parrainOptional.isPresent()) {
                 Parrain parrain = parrainOptional.get();
-                // Update parrain properties here
+                Double longitude = parrain.getLogitude();
+                Double latitude = parrain.getLatitude();
+                return new Double[] { longitude, latitude };
+            } else {
+                throw new NotFoundException("Parrain non trouvé");
+                // Gérer le cas où le parrain n'est pas trouvé
+            }
+        } else if (authorities.contains(new SimpleGrantedAuthority("ROLE_PERSONNE"))) {
+            Optional<Personne> personneOptional = personneRepository.findByUsername(username);
+            if (personneOptional.isPresent()) {
+                Personne personne = personneOptional.get();
+                Double longitude = personne.getLogitude();
+                Double latitude = personne.getLatitude();
+                return new Double[] { longitude, latitude };
+            } else {
+                throw new NotFoundException("Personne non trouvée");
+                // Gérer le cas où la personne n'est pas trouvée
+            }
+        }
+
+        throw new NotFoundException("Role non trouvé");
+        // Gérer le cas où l'utilisateur a un rôle non autorisé
+    }
+
+    @Override
+    public Object retrievePersonne() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long connectedperson = ((UserDetailsImpl) authentication.getPrincipal()).getId();
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        if (authorities.contains(new SimpleGrantedAuthority("ROLE_PERSONNE"))) {
+            return personneRepository.findById(connectedperson).orElse(null);
+        }
+        if (authorities.contains(new SimpleGrantedAuthority("ROLE_AGENT"))) {
+            return agentRepository.findById(connectedperson).orElse(null);
+        }
+
+        if (authorities.contains(new SimpleGrantedAuthority("ROLE_PARRAIN"))) {
+            return parrainRepository.findById(connectedperson).orElse(null);
+        }
+        else {
+            throw new NotFoundException("Role non trouvé");
+        }
+    }
+
+
+
+
+
+    @Override
+    public void editprofile(String username,String email,String nom,String prenom,LocalDate age,String delegationId,
+                            Integer cin,Discipline discipline,Integer phnum,Gender gender) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String usernameuser = authentication.getName();
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        Long delegationIdLong = Long.parseLong(delegationId);
+
+        Optional<Delegation> delegationOptional = delegationRepository.findById(delegationIdLong);
+        Delegation delegation = delegationOptional.get();
+
+            // Set the delegation for the parrain
+
+        if (authorities.contains(new SimpleGrantedAuthority("ROLE_PARRAIN"))) {
+            Optional<Parrain> parrainOptional = parrainRepository.findByUsername(usernameuser);
+            if (parrainOptional.isPresent()) {
+                Parrain parrain = parrainOptional.get();
+                // Update parrain properties
+                parrain.setUsername(username);
+                parrain.setEmail(email);
+                parrain.setNom(nom);
+                parrain.setPrenom(prenom);
                 parrain.setAge(age);
+                parrain.setDelegation(delegation);
+                parrain.setCin(cin);
+                parrain.setDiscipline(discipline);
+                parrain.setPhnum(phnum);
+                parrain.setGender(gender);
+
+
+
 
                 // Calculate age and set trancheAge
                 //parrainService.calculateAgeAndSetTrancheAge(parrain,age);
@@ -266,11 +352,20 @@ public class PersonneServiceImpl implements IPersonneService {
                 throw new NotFoundException("Parrain non trouvé");
             }
         } else if (authorities.contains(new SimpleGrantedAuthority("ROLE_PERSONNE"))) {
-            Optional<Personne> personneOptional = personneRepository.findByUsername(username);
+            Optional<Personne> personneOptional = personneRepository.findByUsername(usernameuser);
             if (personneOptional.isPresent()) {
                 Personne personne = personneOptional.get();
                 // Update personne properties here
+                personne.setUsername(username);
+                personne.setEmail(email);
+                personne.setNom(nom);
+                personne.setPrenom(prenom);
                 personne.setAge(age);
+                personne.setDelegation(delegation);
+                personne.setCin(cin);
+                personne.setDiscipline(discipline);
+                personne.setPhnum(phnum);
+                personne.setGender(gender);
 
                 // Calculate age and set trancheAge
                 calculateAgeAndSetTrancheAge(personne,age);
@@ -283,21 +378,34 @@ public class PersonneServiceImpl implements IPersonneService {
     }
 
     @Override
-    public void editprofileForAgent(LocalDate age, Long idCentre) {
+    public void editprofileForAgent(String username,String email,String nom,String prenom,LocalDate age,String delegationId,
+                                    Integer cin,Discipline discipline,Integer phnum,Gender gender,Long idCentre) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
+        String usernamee = authentication.getName();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Centre centre = centreRepository.findById(idCentre).orElse(null);
+        Long delegationIdLong = Long.parseLong(delegationId);
+
+        Optional<Delegation> delegationOptional = delegationRepository.findById(delegationIdLong);
+        Delegation delegation = delegationOptional.get();
 
         if (authorities.contains(new SimpleGrantedAuthority("ROLE_AGENT"))) {
-            Optional<Agent> agentOptional = agentRepository.findByUsername(username);
+            Optional<Agent> agentOptional = agentRepository.findByUsername(usernamee);
             if (agentOptional.isPresent()) {
                 Agent agent = agentOptional.get();
 
                 // Update agent properties here
-
+                agent.setUsername(username);
+                agent.setEmail(email);
+                agent.setNom(nom);
+                agent.setPrenom(prenom);
                 // Calculate age and set trancheAge
                 agent.setAge(age);
+                agent.setDelegation(delegation);
+                agent.setCin(cin);
+                agent.setDiscipline(discipline);
+                agent.setPhnum(phnum);
+                agent.setGender(gender);
                 agent.setIdCentre(centre.getIdCentre());
                 agentService.calculateAgeAndSetTrancheAge(agent, age);
 

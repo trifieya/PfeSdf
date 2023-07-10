@@ -2,8 +2,7 @@ package tn.sdf.pfesdf.interfaces;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
-import tn.sdf.pfesdf.entities.Agent;
-import tn.sdf.pfesdf.entities.Personne;
+import tn.sdf.pfesdf.entities.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,7 +15,7 @@ public interface IPersonneService {
 
     public Personne addPersonne(Personne per);
 
-    public Personne retrievePersonne(Long idPersonne);
+    public Object retrievePersonne() ;
 
     public void removePersonne(Long idPersonne);
 
@@ -39,9 +38,12 @@ public interface IPersonneService {
     public void enregistrerCoordonnees(Long id, Double latitude, Double longitude);
     public Object getCurrentUser();
     public void changeLocation(Double newLongitude, Double newLatitude);
+    public Double[] getUserCoordinates() ;
     public void calculateAgeAndSetTrancheAge(Personne personne, LocalDate age);
-    public void editprofile(LocalDate age);
-    public void editprofileForAgent(LocalDate age, Long idCentre);
+    public void editprofile(String username,String email,String nom,String prenom,LocalDate age,String delegationId,
+                            Integer cin,Discipline discipline,Integer phnum,Gender gender) ;
+    public void editprofileForAgent(String username,String email,String nom,String prenom,LocalDate age,String delegationId,
+                                    Integer cin,Discipline discipline,Integer phnum,Gender gender,Long idCentre);
 
 
     }

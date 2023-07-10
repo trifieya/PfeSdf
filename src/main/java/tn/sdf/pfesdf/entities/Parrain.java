@@ -64,7 +64,8 @@ public class Parrain implements Serializable {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
-
+    @ManyToOne
+    Delegation delegation;
 
     public Parrain(String username, String email, String password) {
         this.username = username;

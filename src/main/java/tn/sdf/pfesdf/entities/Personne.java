@@ -76,9 +76,7 @@ public class Personne implements Serializable {
     @Enumerated(EnumType.STRING)
     private Discipline discipline;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "personnef")
-    //@JsonManagedReference
-    private Set<FeedBack>feedBacks;
+
 //evider occurence donnée loop
     @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "profilpresonne")

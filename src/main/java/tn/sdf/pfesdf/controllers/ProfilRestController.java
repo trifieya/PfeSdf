@@ -1,6 +1,8 @@
 package tn.sdf.pfesdf.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.sdf.pfesdf.entities.Profil;
 import tn.sdf.pfesdf.interfaces.IProfilService;
@@ -21,9 +23,9 @@ public class ProfilRestController {
         List<Profil> listProfil = profilService.retrieveAllProfils();
         return listProfil;
     }
-    @GetMapping("/profils-by-agent")
-    public List<Profil> getProfilsByAgent() {
-        List<Profil> listProfilByAgent = profilService.retrieveProfilsByAgent();
+    @GetMapping("/profils-by-agent-parrain")
+    public List<Profil> getProfilsByAgentorParrain() {
+        List<Profil> listProfilByAgent = profilService.retrieveProfilsByAgentOrParrain();
         return listProfilByAgent;
     }
     @GetMapping("/retrieve-profil/{idProfil}")
@@ -79,5 +81,19 @@ public class ProfilRestController {
     public void assignprofilparrainproche(@PathVariable Long profilId) {
         profilService.assignprofilparrainproche(profilId);
     }
+    @PostMapping("/calculate-score/{profilId}")
+    public int calculateScore(@PathVariable Long profilId) {
+
+            int score = profilService.calculateScore(profilId);
+
+        return score;
+    }
+
+    @PostMapping("/{personneId}/affectation")
+    public ResponseEntity<String> affecterProgrammeSelonScore(@PathVariable Long personneId) {
+        profilService.affecterProgrammeSelonScore(personneId);
+        return ResponseEntity.ok("Affectation de programmes effectuée avec succès.");
+    }
+
 
 }
