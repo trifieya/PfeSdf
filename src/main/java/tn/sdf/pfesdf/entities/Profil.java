@@ -26,6 +26,7 @@ public class Profil implements Serializable {
     @Enumerated(EnumType.STRING)
     private Situation situation;
     private int score;
+    private boolean archived;
     @Enumerated(EnumType.STRING)
     private Classification classification;
     @JsonIgnore

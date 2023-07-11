@@ -1,6 +1,7 @@
 package tn.sdf.pfesdf.interfaces;
 import org.springframework.http.ResponseEntity;
 import tn.sdf.pfesdf.entities.Agent;
+import tn.sdf.pfesdf.entities.Parrain;
 import tn.sdf.pfesdf.entities.Profil;
 
 import java.util.List;
@@ -15,6 +16,7 @@ public interface IProfilService {
     public  Profil addProfil(Profil pro);
 
     public Profil retrieveProfil (Long  idProfil);
+    public List<Profil> retrieveArchivedProfils();
 
     public  void removeProfil(Long idProfil);
     public void assignNearestCentre(Long profilId);
@@ -27,6 +29,11 @@ public interface IProfilService {
     public void assignprofilagentproche(Long idProfil);
     public int calculateScore(Long profilId) ;
     public void affecterProgrammeSelonScore(Long personneId);
+    public Profil archiveProfil(Long profilId);
+    public Profil unarchiveProfil(Long profilId);
+    public Parrain getProfilParrain(Long profilId);
+    public Agent getProfilAgent(Long profilId);
+
 
 
 

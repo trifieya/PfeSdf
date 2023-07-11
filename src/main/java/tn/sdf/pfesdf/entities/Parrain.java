@@ -33,6 +33,8 @@ public class Parrain implements Serializable {
     @Size(max = 50)
     @Email
     private String email;
+    private boolean bloque;
+
     private LocalDate age;
     @Enumerated(EnumType.STRING)
     private TrancheAge trancheAge;

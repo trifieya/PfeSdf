@@ -98,7 +98,10 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-
+        if (userDetails.isBloque()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Votre compte a été bloqué. Veuillez contacter l'administrateur.");
+        }
         ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
 
         List<String> roles = userDetails.getAuthorities().stream()
@@ -373,6 +376,59 @@ public class AuthController {
                 +request.getServerPort()+request.getContextPath();
     }
 
+    @PutMapping("/{id}/bloquer")
+    public ResponseEntity<?> bloquerUtilisateur(@PathVariable("id") Long utilisateurId) {
+        // Récupérer l'utilisateur à partir de son ID
+        Optional<Personne> personneOptional = personneRepository.findById(utilisateurId);
+        Optional<Parrain> parrainOptional = parrainRepository.findById(utilisateurId);
+        Optional<Agent> agentOptional = agentRepository.findById(utilisateurId);
+
+        if (personneOptional.isPresent()) {
+            Personne personne = personneOptional.get();
+            personne.setBloque(true);
+            personneRepository.save(personne);
+        } else if (parrainOptional.isPresent()) {
+            Parrain parrain = parrainOptional.get();
+            parrain.setBloque(true);
+            parrainRepository.save(parrain);
+        } else if (agentOptional.isPresent()) {
+            Agent agent = agentOptional.get();
+            agent.setBloque(true);
+            agentRepository.save(agent);
+        } else {
+            // L'utilisateur n'a pas été trouvé
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}/debloquer")
+    public ResponseEntity<?> debloquerUtilisateur(@PathVariable("id") Long utilisateurId) {
+        // Récupérer l'utilisateur à partir de son ID
+        Optional<Personne> personneOptional = personneRepository.findById(utilisateurId);
+        Optional<Parrain> parrainOptional = parrainRepository.findById(utilisateurId);
+        Optional<Agent> agentOptional = agentRepository.findById(utilisateurId);
+
+        if (personneOptional.isPresent()) {
+            Personne personne = personneOptional.get();
+            personne.setBloque(false);
+            personneRepository.save(personne);
+        } else if (parrainOptional.isPresent()) {
+            Parrain parrain = parrainOptional.get();
+            parrain.setBloque(false);
+            parrainRepository.save(parrain);
+        } else if (agentOptional.isPresent()) {
+            Agent agent = agentOptional.get();
+            agent.setBloque(false);
+            agentRepository.save(agent);
+        } else {
+            // L'utilisateur n'a pas été trouvé
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok().build();
+    }
 
 
 

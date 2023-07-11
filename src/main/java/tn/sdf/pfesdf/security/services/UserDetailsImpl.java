@@ -45,13 +45,13 @@ public class UserDetailsImpl implements UserDetails {
 
     private Double latitude;
     private List<String> roles;
-
+    private boolean bloque;
     private Collection<? extends GrantedAuthority> authorities; //les éléments de la Collection sont des objets qui étendent l'interface GrantedAuthority. GrantedAuthority est une interface de Spring Security qui représente une autorisation attribuée à un utilisateur. Les implémentations courantes de cette interface sont SimpleGrantedAuthority et Role, qui sont utilisées pour stocker les rôles de l'utilisateur.
 
 
     public UserDetailsImpl(Long id, String username, String email, String nom, String photo, String prenom,
                            LocalDate age, TrancheAge trancheAge, String password, Gender gender,
-                           Integer phnum, Integer cin, Double logitude, Double latitude,
+                           Integer phnum, Integer cin, Double logitude, Double latitude, boolean bloque,
                            Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;
@@ -67,6 +67,7 @@ public class UserDetailsImpl implements UserDetails {
         this.cin = cin;
         this.logitude = logitude;
         this.latitude = latitude;
+        this.bloque = bloque;
         this.authorities = authorities;
     }
     public UserDetailsImpl(Long id, String username, String email, String password,
@@ -101,6 +102,7 @@ public class UserDetailsImpl implements UserDetails {
                 personne.getCin(),
                 personne.getLogitude(),
                 personne.getLatitude(),
+                personne.isBloque(),
                 authorities);
     }
 
@@ -124,6 +126,7 @@ public class UserDetailsImpl implements UserDetails {
                 parrain.getCin(),
                 parrain.getLogitude(),
                 parrain.getLatitude(),
+                parrain.isBloque(),
                 authorities);
     }
 
@@ -147,6 +150,7 @@ public class UserDetailsImpl implements UserDetails {
                 agent.getCin(),
                 agent.getLogitude(),
                 agent.getLatitude(),
+                agent.isBloque(),
                 authorities);
     }
     public static UserDetailsImpl build(Admin admin) {
@@ -235,5 +239,7 @@ public class UserDetailsImpl implements UserDetails {
     }
 
 
-
+    public boolean isBloque() {
+        return bloque;
+    }
 }

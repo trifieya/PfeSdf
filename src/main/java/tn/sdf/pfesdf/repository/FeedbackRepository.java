@@ -12,5 +12,10 @@ public interface FeedbackRepository extends JpaRepository<FeedBack,Long> {
     //List<FeedBack>  findByProfilf(Profil profil);
     List<FeedBack>  findByProfilf(Profil profil);
 
+    List<FeedBack> findByProfilfAndIdAgentNotNull(Profil profil);
+    List<FeedBack> findByProfilfAndIdParrainNotNull(Profil profil);
+
+
+
 
 }

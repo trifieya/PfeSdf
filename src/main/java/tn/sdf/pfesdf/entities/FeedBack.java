@@ -26,7 +26,7 @@ public class FeedBack implements Serializable {
     private TypeFeedback feedglobal;
     private String description;
     private Long idAgent;
-    private Long idParrain;
+        private Long idParrain;
     @JsonBackReference
     @ManyToOne
     Profil profilf;

@@ -59,8 +59,10 @@ public class ParrainServiceImpl implements IParrainService {
 
     @Override
     public Parrain addParrain(Parrain p) {
-
-
+        String password = p.getPassword();
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String hashedPassword = passwordEncoder.encode(password);
+        p.setPassword(hashedPassword);
         return parrainRepository.save(p);
     }
 

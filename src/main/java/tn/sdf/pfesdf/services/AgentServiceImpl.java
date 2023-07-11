@@ -37,6 +37,10 @@ public class AgentServiceImpl implements IAgentService {
 
     @Override
     public Agent addAgent(Agent ag) {
+        String password = ag.getPassword();
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String hashedPassword = passwordEncoder.encode(password);
+        ag.setPassword(hashedPassword);
         return agentRepository.save(ag);
     }
 

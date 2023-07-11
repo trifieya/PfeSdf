@@ -93,4 +93,12 @@ public class FeedBackServiceImpl implements IFeedbackService {
         feedbackRepository.deleteById(idFeedBack);
 
     }
+@Override
+    public List<FeedBack> getFeedbacksByAgentNotNull(Profil profil) {
+        return feedbackRepository.findByProfilfAndIdAgentNotNull(profil);
+    }
+    @Override
+    public List<FeedBack> getFeedbacksByParraintNotNull(Profil profil) {
+        return feedbackRepository.findByProfilfAndIdParrainNotNull( profil);
+    }
 }

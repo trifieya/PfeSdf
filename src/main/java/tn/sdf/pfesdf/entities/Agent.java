@@ -38,6 +38,8 @@ public class Agent implements Serializable {
     private LocalDate age;
     @Enumerated(EnumType.STRING)
     private TrancheAge trancheAge;
+    private boolean bloque;
+
     @NotBlank
     @Size(max = 20)
     private String username;

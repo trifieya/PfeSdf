@@ -34,12 +34,21 @@ public class ProfilServiceImpl  implements IProfilService {
     DocumentRepository documentRepository;
     @Autowired
     private ProgrammeRepository programmeRepository;
-
+//profil non archivé
     @Override
     public List<Profil> retrieveAllProfils() {
 
-        return profilRepository.findAll();
+        return profilRepository.findByArchived(false);
+
     }
+    //profil archivé
+    @Override
+    public List<Profil> retrieveArchivedProfils() {
+
+        return profilRepository.findByArchived(true);
+
+    }
+
 
     @Override
     public List<Profil> retrieveProfilsByAgentOrParrain() {
@@ -471,6 +480,45 @@ profilRepository.save(profil);
 
             personneRepository.save(personne);
         }
+
+
+
+
+
+        public Profil archiveProfil(Long profilId) {
+        //utiliser optional  pour éviter les problèmes de valeurs null et les exceptions NullPointerException.
+            Optional<Profil> optionalProfil = profilRepository.findById(profilId);
+
+            if (optionalProfil.isPresent()) {
+                Profil profil = optionalProfil.get();
+                profil.setArchived(true);
+                return profilRepository.save(profil);
+            }
+
+            return null;
+        }
+
+        public Profil unarchiveProfil(Long profilId) {
+            Optional<Profil> optionalProfil = profilRepository.findById(profilId);
+
+            if (optionalProfil.isPresent()) {
+                Profil profil = optionalProfil.get();
+                profil.setArchived(false);
+                return profilRepository.save(profil);
+            }
+
+            return null;
+        }
+@Override
+    public Parrain getProfilParrain(Long profilId) {
+        return profilRepository.findParrainByProfilId(profilId);
+    }
+    @Override
+    public Agent getProfilAgent(Long profilId) {
+        return profilRepository.findAgentByProfilId(profilId);
+    }
+
+
 
 
 
