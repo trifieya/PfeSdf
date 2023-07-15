@@ -73,10 +73,10 @@ public class PersonneServiceImpl implements IPersonneService {
     }
 
 
-//    @Override
-//    public Personne retrievePersonne(Long idPersonne) {
-//        return personneRepository.findById(idPersonne).orElse(null);
-//    }
+    @Override
+    public Personne retrievePersonne(Long idPersonne) {
+        return personneRepository.findById(idPersonne).orElse(null);
+    }
 
     @Override
     public void removePersonne(Long idPersonne) {

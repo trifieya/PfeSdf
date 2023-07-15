@@ -27,7 +27,7 @@ public interface IProfilService {
     public void assignprofilagentadequat(Long idProfil);
     public void assignprofilparrainproche(Long idProfil);
     public void assignprofilagentproche(Long idProfil);
-    public int calculateScore(Long profilId) ;
+    public void calculateScores();
     public void affecterProgrammeSelonScore(Long personneId);
     public Profil archiveProfil(Long profilId);
     public Profil unarchiveProfil(Long profilId);

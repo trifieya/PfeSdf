@@ -57,7 +57,7 @@ public class Personne implements Serializable {
     private LocalDate date_affect_parrain;
 
    @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     @JoinTable(name = "personne_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -68,7 +68,7 @@ public class Personne implements Serializable {
 
     @ManyToOne
     Delegation delegation;
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     private Set<Programme> programmes;
     @ManyToOne
     Parrain parrain;

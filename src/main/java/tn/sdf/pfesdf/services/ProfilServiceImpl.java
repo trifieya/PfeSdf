@@ -3,6 +3,7 @@ package tn.sdf.pfesdf.services;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,6 +15,7 @@ import tn.sdf.pfesdf.interfaces.IProfilService;
 import tn.sdf.pfesdf.repository.*;
 import tn.sdf.pfesdf.security.services.UserDetailsImpl;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -345,89 +347,90 @@ public class ProfilServiceImpl  implements IProfilService {
 
 
          @Override
-        public int calculateScore(Long profilId) {
-            Profil profil = profilRepository.findById(profilId)
-                    .orElseThrow(() -> new RuntimeException("Profil non trouvé avec l'ID : " + profilId));
-             int maxScore = 20;
-             int score = 0;
-             Set<FeedBack> feedbacks = profil.getFeedBacks();
-             boolean hasFeedback = !feedbacks.isEmpty();
+         @Transactional
+         @Scheduled(cron = "0 0 0 1 * *") // Exécuter à minuit le premier jour de chaque mois
+         public void calculateScores() {
+             List<Profil> profils = profilRepository.findAll();
 
+             for (Profil profil : profils) {
+                 int maxScore = 20;
+                 int score = 0;
+                 Set<FeedBack> feedbacks = profil.getFeedBacks();
+                 boolean hasFeedback = !feedbacks.isEmpty();
 
-             // Vérification de la discipline
-             if (hasFeedback) {
-                 Discipline discipline = profil.getProfilpresonne().getDiscipline();
-                 if (discipline == Discipline.SOUPLE) {
-                     score += 7;
-                 } else if (discipline == Discipline.ORDINAIRE) {
-                     score += 4;
-                 } else if (discipline == Discipline.COMPLIQUEE) {
-                     score += 1;
-                 }
+                 // Vérification de la discipline
+                 if (hasFeedback) {
+                     Discipline discipline = profil.getProfilpresonne().getDiscipline();
+                     if (discipline == Discipline.SOUPLE) {
+                         score += 7;
+                     } else if (discipline == Discipline.ORDINAIRE) {
+                         score += 4;
+                     } else if (discipline == Discipline.COMPLIQUEE) {
+                         score += 1;
+                     }
 
-                 // Vérification des feedbacks d'activité
-                 Set<FeedBack> feedbackss = profil.getFeedBacks();
-                 int agentFeedbackCount = 0;
-                 int parrainFeedbackCount = 0;
+                     // Vérification des feedbacks d'activité
+                     Set<FeedBack> feedbackss = profil.getFeedBacks();
+                     int agentFeedbackCount = 0;
+                     int parrainFeedbackCount = 0;
 
-                 for (FeedBack feedback : feedbackss) {
-                     LocalDate feedbackDate = feedback.getDateajoutFeed();
-                     if (feedbackDate.getYear() == LocalDate.now().getYear()) {
-                         if (feedback.getIdAgent() != null) {
-                             agentFeedbackCount++;
-                             score += getFeedbackScore(feedback.getFeedactivite());
-                         }
-                         if (feedback.getIdParrain() != null) {
-                             parrainFeedbackCount++;
-                             score += getFeedbackScore(feedback.getFeedactivite());
+                     for (FeedBack feedback : feedbackss) {
+                         LocalDate feedbackDate = feedback.getDateajoutFeed();
+                         if (feedbackDate.getYear() == LocalDate.now().getYear()) {
+                             if (feedback.getIdAgent() != null) {
+                                 agentFeedbackCount++;
+                                 score += getFeedbackScore(feedback.getFeedactivite());
+                             }
+                             if (feedback.getIdParrain() != null) {
+                                 parrainFeedbackCount++;
+                                 score += getFeedbackScore(feedback.getFeedactivite());
+                             }
                          }
                      }
-                 }
 
-                 // Vérification des documents
-                 Set<Document> documents = profil.getDocuments();
-                 for (Document document : documents) {
-                     if (document.getTypedocument() == TypeDocument.B3 && document.getValeur()) {
+                     // Vérification des documents
+                     Set<Document> documents = profil.getDocuments();
+                     for (Document document : documents) {
+                         if (document.getTypedocument() == TypeDocument.B3 && document.getValeur()) {
+                             score += 3;
+                         }
+                         if (document.getTypedocument() == TypeDocument.ANTECEDENT_PSYCHIATRIQUE && !document.getValeur()) {
+                             score += 2;
+                         }
+                     }
+                 } else if (!hasFeedback) {
+                     Discipline discipline = profil.getProfilpresonne().getDiscipline();
+                     if (discipline == Discipline.SOUPLE) {
+                         score += 9;
+                     } else if (discipline == Discipline.ORDINAIRE) {
+                         score += 6;
+                     } else if (discipline == Discipline.COMPLIQUEE) {
                          score += 3;
                      }
-                     if (document.getTypedocument() == TypeDocument.ANTECEDENT_PSYCHIATRIQUE && !document.getValeur()) {
-                         score += 2;
+
+                     // Vérification des documents
+                     Set<Document> documents = profil.getDocuments();
+                     for (Document document : documents) {
+                         if (document.getTypedocument() == TypeDocument.B3 && document.getValeur()) {
+                             score += 6;
+                         }
+                         if (document.getTypedocument() == TypeDocument.ANTECEDENT_PSYCHIATRIQUE && !document.getValeur()) {
+                             score += 5;
+                         }
                      }
                  }
-             }
-             else if (!hasFeedback) {
-                 Discipline discipline = profil.getProfilpresonne().getDiscipline();
-                 if (discipline == Discipline.SOUPLE) {
-                     score += 9;
-                 } else if (discipline == Discipline.ORDINAIRE) {
-                     score += 6;
-                 } else if (discipline == Discipline.COMPLIQUEE) {
-                     score += 3;
+
+                 profil.setScore(score);
+                 if (score < 15) {
+                     profil.setClassification(Classification.NOT_READY);
+                 } else {
+                     profil.setClassification(Classification.READY);
                  }
 
-
-                 // Vérification des documents
-                 Set<Document> documents = profil.getDocuments();
-                 for (Document document : documents) {
-                     if (document.getTypedocument() == TypeDocument.B3 && document.getValeur()) {
-                         score += 6;
-                     }
-                     if (document.getTypedocument() == TypeDocument.ANTECEDENT_PSYCHIATRIQUE && !document.getValeur()) {
-                         score += 5;
-                     }
-                 }
+                 profilRepository.save(profil);
              }
-
-
-              profil.setScore(score);
-             if(score<15){
-                 profil.setClassification(Classification.NOT_READY);
-             }else {
-                 profil.setClassification(Classification.READY);
-             }
-profilRepository.save(profil);
-             return score;
          }
+
 
     private int getFeedbackScore(TypeFeedback feedback) {
         switch (feedback) {

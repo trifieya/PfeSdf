@@ -45,5 +45,6 @@ public interface IPersonneService {
     public void editprofileForAgent(String username,String email,String nom,String prenom,LocalDate age,String delegationId,
                                     Integer cin,Discipline discipline,Integer phnum,Gender gender,Long idCentre);
 
+    public Personne retrievePersonne(Long idPersonne);
 
     }

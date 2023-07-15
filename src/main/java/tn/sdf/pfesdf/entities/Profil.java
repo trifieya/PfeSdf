@@ -34,7 +34,7 @@ public class Profil implements Serializable {
     //@JsonManagedReference
     private Set<RendezVous>rendezVousSet;
     @JsonManagedReference //L'annotation @JsonManagedReference est utilisée pour la classe parente (Profil), tandis que l'annotation @JsonBackReference est utilisée pour la classe enfant (FeedBack), ce qui permet d'éviter la sérialisation en boucle lors de la conversion en JSON.
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "profilf")
+    @OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL, mappedBy = "profilf")
     //@JsonManagedReference
     private Set<FeedBack>feedBacks;
     @OneToOne

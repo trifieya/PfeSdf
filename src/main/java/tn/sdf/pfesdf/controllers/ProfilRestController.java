@@ -88,12 +88,14 @@ public class ProfilRestController {
     public void assignprofilparrainproche(@PathVariable Long profilId) {
         profilService.assignprofilparrainproche(profilId);
     }
-    @PostMapping("/calculate-score/{profilId}")
-    public int calculateScore(@PathVariable Long profilId) {
-
-            int score = profilService.calculateScore(profilId);
-
-        return score;
+    @PostMapping("/calculate-scores")
+    public ResponseEntity<String> calculateScores() {
+        try {
+            profilService.calculateScores();
+            return ResponseEntity.ok("Scores calculated successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to calculate scores.");
+        }
     }
 
     @PostMapping("/{personneId}/affectation")

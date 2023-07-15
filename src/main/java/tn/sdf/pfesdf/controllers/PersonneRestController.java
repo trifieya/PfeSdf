@@ -2,6 +2,9 @@ package tn.sdf.pfesdf.controllers;
 
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -25,6 +28,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/personne")
+@Endpoint(id="myendpoint")
 public class PersonneRestController {
     @Autowired
     IPersonneService personneService;
@@ -34,18 +38,21 @@ public class PersonneRestController {
     //FTPServiceImp ftpServiceImp;
 
     @GetMapping("/retrieve-all-personnes")
+    @ReadOperation
     //@PreAuthorize("hasRole('ROLE_PERSONNE')")
     public List<Personne> getPersonnes() {
         List<Personne> listPersonne = personneService.retrieveAllPersonnes();
         return listPersonne;
     }
     @GetMapping("/retrieve-personne")
+
     public Object retrievePersonne() {
         return personneService.retrievePersonne();
     }
 
 
     @PostMapping("/add-personne")
+    @WriteOperation
     public Personne addPersonne(@RequestBody Personne per) {
         Personne personne = personneService.addPersonne(per);
         return personne;
