@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>tn.sdf</groupId>
-    <artifactId>Pfe-sdf</artifactId>
+    <artifactId>pfe-sdf</artifactId>
     <version>1.0</version>
-    <name>Pfe-sdf</name>
+    <name>pfe-sdf</name>
     <description>Pfe-sdf</description>
     <!--
     <properties>
