@@ -1,22 +1,13 @@
 package tn.sdf.pfesdf.services;
 
 
-
-import lombok.AllArgsConstructor;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import tn.sdf.pfesdf.entities.Discipline;
 import tn.sdf.pfesdf.entities.Personne;
-//import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-
 import java.util.List;
 
-
-
-//@SpringJUnitConfig
 @SpringBootTest
 public class PersonneServiceImpTest {
 
@@ -25,11 +16,13 @@ public class PersonneServiceImpTest {
     @Autowired
      PersonneServiceImpl personneService;
 
+
+
     @BeforeEach
     public void setup() {
         // Initialize the mocks before each test
       //  User u =User.builder().address("ariana").email("test@gmail.com").fullname("falten").phone(251203690).sexe(Sexe.MALE).username("test").build();
-       Personne p = new Personne("testuser","test@gmail.fr","pwd");
+       Personne p = new Personne("testuser","test@gmail.fr","pwd",36.89974335764587, 10.189009815391552);
         savedPersonne= personneService.addPersonne(p);
 
     }
@@ -39,16 +32,47 @@ public class PersonneServiceImpTest {
 
        List<Personne> listUsers= personneService.retrieveAllPersonnes();
        Assertions.assertTrue(listUsers.size()>0);
-        // Verify that the JavaMailSender's send method was called with the correct arguments
-       // verify(javaMailSender, times(1)).send(any());
+        Personne p = new Personne("testuser","test@gmail.fr","pwd",36.89974335764587, 10.189009815391552);
+        List<Personne> listPersonnes= personneService.retrieveAllPersonnes();
+        Integer initialSize = listPersonnes.size();
+        Personne addedPersonne = personneService.addPersonne(p);
+        listPersonnes.add(addedPersonne);
+        Assertions.assertTrue(listPersonnes.size()>0);
+        Assertions.assertTrue(listPersonnes.size()==initialSize+1);
+        personneService.removePersonne(addedPersonne.getIdPersonne());
+    }
+
+
+
+    @Test
+    @Order(2)
+    public void testGetCategory() {
+        Personne personneFind= personneService.retrievePersonne(savedPersonne.getIdPersonne());
+        Assertions.assertTrue(personneFind !=null);
+        Assertions.assertTrue(personneFind.getUsername().equals("testuser"));
+        Assertions.assertTrue(personneFind.getLogitude()==36.89974335764587);
+
+    }
+
+
+    @Test
+    @Order(3)
+    public void testupdatePersonne()
+    {
+        Personne personneFind= personneService.retrievePersonne(savedPersonne.getIdPersonne());
+        personneFind.setDiscipline(Discipline.SOUPLE);
+        Assertions.assertFalse(personneFind.getDiscipline().equals(Discipline.COMPLIQUEE));
+        Assertions.assertTrue(personneFind.getUsername().equals("testuser"));
+
     }
 
     @Test
-    public void testFindById() {
-       Personne personneFind= personneService.retrievePersonne(savedPersonne.getIdPersonne());
-       Assertions.assertTrue(personneFind.getUsername().equals("testuser"));
-
+    public void testChangeLocation() {
+   // create expected user with specific location
+        // call ChangeLocation method on the savedPersonne object
+        // assert that expected user locations are the same with the location updated of savedPersonne
     }
+
 
     @AfterEach
     public void cleanUp() {

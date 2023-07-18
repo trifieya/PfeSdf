@@ -84,13 +84,15 @@ public class Personne implements Serializable {
     Profil profil;
 
 
-    public  Personne (String username, String email, String password) {
-        this.username = username;
+
+
+    public Personne(String username, String email , String password, double logitude, double latitude) {
         this.email = email;
+        this.username = username;
         this.password = password;
-
+        this.logitude = logitude;
+        this.latitude = latitude;
     }
-
 
     public Set<Role> getRoles() {
         return roles;
