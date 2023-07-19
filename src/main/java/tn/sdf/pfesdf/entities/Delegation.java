@@ -28,7 +28,13 @@ public class Delegation implements Serializable {
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "delegation")
     private Set<Parrain> parrainsv;
-
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "delegation")
+    private Set<Centre> centre;
     @ManyToOne
     Gouvernerat gouvernerat;
+
+    public Delegation(String id) {
+        this.id_delegation = Long.valueOf(id);
+    }
 }

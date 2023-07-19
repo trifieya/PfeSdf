@@ -4,9 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tn.sdf.pfesdf.entities.Agent;
-import tn.sdf.pfesdf.entities.Parrain;
-import tn.sdf.pfesdf.entities.Profil;
+import tn.sdf.pfesdf.entities.*;
 import tn.sdf.pfesdf.interfaces.IProfilService;
 
 
@@ -98,10 +96,11 @@ public class ProfilRestController {
         }
     }
 
-    @PostMapping("/{personneId}/affectation")
-    public ResponseEntity<String> affecterProgrammeSelonScore(@PathVariable Long personneId) {
-        profilService.affecterProgrammeSelonScore(personneId);
-        return ResponseEntity.ok("Affectation de programmes effectuée avec succès.");
+
+
+    @PostMapping("/{profilId}/affectation")
+    public void affecterProgrammeSelonScore(@PathVariable Long profilId) {
+        profilService.affecterProgrammeSelonScore(profilId);
     }
 
         @PostMapping("/{profilId}/archive")
@@ -141,6 +140,25 @@ public class ProfilRestController {
         Agent agent = profilService.getProfilAgent(profilId);
         if (agent != null) {
             return ResponseEntity.ok(agent);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/{profilId}/centre")
+    public ResponseEntity<Centre> getProfilCentre(@PathVariable Long profilId) {
+        Centre centre = profilService.getProfilCentre(profilId);
+        if (centre != null) {
+            return ResponseEntity.ok(centre);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    @GetMapping("/{profilId}/programme")
+    public ResponseEntity<List<Programme>> getProfilProgramme(@PathVariable Long profilId) {
+        List<Programme> programmes = profilService.getProfilProgramme(profilId);
+        if (programmes != null) {
+            return ResponseEntity.ok(programmes);
         } else {
             return ResponseEntity.notFound().build();
         }

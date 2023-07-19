@@ -520,10 +520,15 @@ public class ProfilServiceImpl  implements IProfilService {
     public Agent getProfilAgent(Long profilId) {
         return profilRepository.findAgentByProfilId(profilId);
     }
+    @Override
+    public Centre getProfilCentre(Long profilId){
+        return profilRepository.findCentreByProfilId(profilId);
+    }
 
-
-
-
+    @Override
+    public List<Programme> getProfilProgramme(Long profilId) {
+        return profilRepository.findProgrammeByProfilId(profilId);
+    }
 
 
 }

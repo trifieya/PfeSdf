@@ -1,8 +1,6 @@
 package tn.sdf.pfesdf.interfaces;
 import org.springframework.http.ResponseEntity;
-import tn.sdf.pfesdf.entities.Agent;
-import tn.sdf.pfesdf.entities.Parrain;
-import tn.sdf.pfesdf.entities.Profil;
+import tn.sdf.pfesdf.entities.*;
 
 import java.util.List;
 
@@ -33,8 +31,12 @@ public interface IProfilService {
     public Profil unarchiveProfil(Long profilId);
     public Parrain getProfilParrain(Long profilId);
     public Agent getProfilAgent(Long profilId);
+    public Centre getProfilCentre(Long profilId);
+    public List<Programme> getProfilProgramme(Long profilId);
 
 
 
 
-    }
+
+
+}

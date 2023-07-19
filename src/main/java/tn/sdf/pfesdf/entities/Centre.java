@@ -28,7 +28,7 @@ public class Centre implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "centre")
     @JsonIgnore
     private Set<Personne> personnesc;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     Delegation delegation;
     //@ManyToOne(cascade = CascadeType.ALL)
    // Admin adminc;
