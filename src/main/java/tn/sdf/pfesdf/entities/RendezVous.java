@@ -29,5 +29,5 @@ public class RendezVous implements Serializable {
     @ManyToOne
     Agent agent;
 
-  
+
 }
