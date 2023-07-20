@@ -29,10 +29,5 @@ public class RendezVous implements Serializable {
     @ManyToOne
     Agent agent;
 
-    public RendezVous(LocalDateTime dateRdv, LocalDateTime dateFinRdv, Profil profilrdv, Agent agent) {
-        this.dateRdv = dateRdv;
-        this.dateFinRdv = dateFinRdv;
-        this.profilrdv = profilrdv;
-        this.agent = agent;
-    }
+  
 }
