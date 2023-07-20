@@ -12,6 +12,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@EqualsAndHashCode
 @Entity
 public class Centre implements Serializable {
     @Id
@@ -22,8 +23,8 @@ public class Centre implements Serializable {
     private Integer telephone;
     private String courriel;
     private Integer capMax;
-    private Float longitude;
-    private Float latitude;
+    private Double longitude;
+    private Double latitude;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "centre")
     @JsonIgnore
@@ -34,5 +35,14 @@ public class Centre implements Serializable {
    // Admin adminc;
 
 
+    public Centre(Double longitude, Double latitude) {
+        this.longitude = longitude;
+        this.latitude = latitude;
+    }
 
+    public Centre(String nom, Integer telephone, Integer capMax) {
+        this.nom = nom;
+        this.telephone = telephone;
+        this.capMax = capMax;
+    }
 }

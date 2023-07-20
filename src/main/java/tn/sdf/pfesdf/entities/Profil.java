@@ -43,6 +43,8 @@ public class Profil implements Serializable {
     @ManyToMany (cascade = CascadeType.ALL,mappedBy = "profildoc")
     private Set<Document>documents =new HashSet<>();
 
-
-
+    public Profil(String maladie, Personne profilpresonne) {
+        this.maladie = maladie;
+        this.profilpresonne = profilpresonne;
+    }
 }

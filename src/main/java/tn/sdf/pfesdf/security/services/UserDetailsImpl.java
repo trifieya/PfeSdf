@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import tn.sdf.pfesdf.entities.*;
@@ -79,7 +80,13 @@ public class UserDetailsImpl implements UserDetails {
         this.authorities = authorities;
     }
 
-
+    public UserDetailsImpl(Long id, String username, String password,
+                           Collection<? extends GrantedAuthority> authorities) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.authorities = authorities;
+    }
 
 
     public static UserDetailsImpl build(Personne personne) {

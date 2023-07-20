@@ -48,8 +48,8 @@ public class CentreRestController {
     }
     @PostMapping("/enregistrer")
     public void enregistrerCoordonnees(@RequestParam Long idCentre,
-                                       @RequestParam Float latitude,
-                                       @RequestParam Float longitude) {
+                                       @RequestParam Double latitude,
+                                       @RequestParam Double longitude) {
         centreService.enregistrerCoordonnees(idCentre, latitude, longitude);
     }
 

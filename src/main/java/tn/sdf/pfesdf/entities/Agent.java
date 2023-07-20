@@ -82,5 +82,11 @@ public class Agent implements Serializable {
         this.email = email;
         this.password = password;
     }
-
+    public Agent(String username, String email , String password, double logitude, double latitude) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.logitude = logitude;
+        this.latitude = latitude;
+    }
 }

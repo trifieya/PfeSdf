@@ -14,5 +14,5 @@ public interface ICentreService {
     public Centre retrieveCentre (Long  idCentre);
 
     public  void removeCentre(Long idCentre);
-    public void enregistrerCoordonnees(Long idCentre,Float latitude, Float longitude);
+    public void enregistrerCoordonnees(Long idCentre,Double latitude, Double longitude);
 }

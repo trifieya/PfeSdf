@@ -40,7 +40,7 @@ public class CentreServiceImpl implements ICentreService {
 
     }
     @Override
-    public void enregistrerCoordonnees(Long idCentre,Float latitude, Float longitude) {
+    public void enregistrerCoordonnees(Long idCentre,Double latitude, Double longitude) {
 
         Centre centre = centreRepository.findById(idCentre).orElse(null);
         centre.setLatitude(latitude);

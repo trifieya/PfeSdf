@@ -36,5 +36,9 @@ public class FeedBack implements Serializable {
     //private Long idCentre;
 
 
-
+    public FeedBack(TypeFeedback feedcentre, TypeFeedback feedactivite, TypeFeedback feedglobal) {
+        this.feedcentre = feedcentre;
+        this.feedactivite = feedactivite;
+        this.feedglobal = feedglobal;
+    }
 }
