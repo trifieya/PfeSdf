@@ -56,7 +56,7 @@ public class CentreServiceImplTest {
 
     @Test
     @Order(3)
-    public void testupdatePersonne() {
+    public void testupdateCentre() {
         Centre centreFind = centreService.retrieveCentre(savedCentre.getIdCentre());
         centreFind.setTelephone(28128426);
         Assertions.assertTrue(centreFind.getTelephone().equals(28128426));
