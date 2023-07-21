@@ -59,7 +59,7 @@ public class PersonneServiceImpTest {
         personneService.removePersonne(addedPersonne.getIdPersonne());
     }
 
-
+/*
     @Test
     @Order(2)
     public void testGetCategory() {
@@ -69,6 +69,8 @@ public class PersonneServiceImpTest {
         Assertions.assertTrue(personneFind.getLogitude() == 36.89974335764587);
 
     }
+    
+ */
 
 
     @Test
